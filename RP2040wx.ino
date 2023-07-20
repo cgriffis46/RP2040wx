@@ -74,8 +74,8 @@ extern TwoWire Wire1;
 #endif
 
 #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
-  void updatePressureSensorHandler();
-  Ticker PressureSensorTicker(updatePressureSensorHandler,2,0);
+//  void updatePressureSensorHandler();
+//  Ticker PressureSensorTicker(updatePressureSensorHandler,2,0);
   bool QueueBarometerForInterfaces = false;
   float pressure, PressureOffset;
   float pressureInHg;
@@ -85,10 +85,8 @@ extern TwoWire Wire1;
 #ifdef USE_SHT31
   #include <Adafruit_SHT31.h>
   Adafruit_SHT31 sht31 = Adafruit_SHT31(&Wire1);
-
   bool enableHeater = false;
   uint8_t loopCnt = 0;
-
   #ifndef _USE_TH_SENSOR
     #define _USE_TH_SENSOR
   #endif
@@ -107,7 +105,7 @@ extern TwoWire Wire1;
 
 #ifdef _USE_TH_SENSOR
   void readTempHumiditySensor();
-  Ticker readTHSensorTicker(readTempHumiditySensor,2,0);
+//  Ticker readTHSensorTicker(readTempHumiditySensor,2,0);
   float temperature, humidity;
   float tempf, tempc;
   bool QueueThermometerForInterfaces = false;
