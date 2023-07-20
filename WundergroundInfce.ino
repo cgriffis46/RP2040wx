@@ -10,7 +10,25 @@ void UpdateWundergroundInfce(){
         Serial.println("could not connect to wunderground IP");
       }}
     if(client.connected()){
-      String date_str = "&dateutc=now";
+      // Assemble date_str
+      date_str = "";
+      switch (WundergroundTimeSource){ 
+        case 1:{
+          date_str = String(F("&dateutc="))+String(now.year())+F("-")+String(now.month())+F("-")+String(now.day())+String(F("+"))+String(now.hour())+String(F("%3A"))+String(now.minute())+String(F("%3A"))+String(now.second());
+          break;
+        }
+        case 2:{
+          date_str = String(F("&dateutc="))+String(now.year())+F("-")+String(now.month())+F("-")+String(now.day())+String(F("+"))+String(now.hour())+String(F("%3A"))+String(now.minute())+String(F("%3A"))+String(now.second());
+          break;
+        }
+        case 3:{
+            date_str = "&dateutc=now";
+          break;
+        }
+      }
+      if(!date_str.length()>0){
+        date_str = "&dateutc=now";
+      }
 //      String date_str = String(F("&dateutc="))+String(now.year())+F("-")+String(now.month())+F("-")+String(now.day())+String(F("+"))+String(now.hour())+String(F("%3A"))+String(now.minute())+String(F("%3A"))+String(now.second());
       Wundergroundpayload = "";
       // Send temperature and humidity if necessary
@@ -199,6 +217,7 @@ void handleWundergroundConfigSave(){
   server.arg("p").toCharArray(WundergroundStationPassword, sizeof(WundergroundStationPassword) - 1);
   Serial.println(thermometer1Type = server.arg("t").toInt());
   Serial.println(humidity1_sensor_type = server.arg("h").toInt());
+  Serial.println(WundergroundTimeSource = server.arg("z").toInt());
   server.sendHeader("Location", "config", true);
   server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   server.sendHeader("Pragma", "no-cache");
@@ -278,6 +297,16 @@ void LoadWundergroundCredentials(){
     #endif
     #ifdef USE_I2C_EEPROM
       humidity1_sensor_type = fram.read(mem_WUNDERGROUND_HUMIDITY_ID);
+    #endif
+    // Time Source
+    #ifdef USE_SPI_FRAM
+      WundergroundTimeSource = ram.read8(mem_WUNDERGROUND_TIME_SOURCE);
+    #endif
+    #ifdef USE_I2C_FRAM
+      WundergroundTimeSource = fram.read(mem_WUNDERGROUND_TIME_SOURCE);
+    #endif
+    #ifdef USE_I2C_EEPROM
+      WundergroundTimeSource = fram.read(mem_WUNDERGROUND_TIME_SOURCE);
     #endif
 
 }
@@ -372,6 +401,19 @@ void SaveWundergroundCredentials(){
     #endif
     #ifdef USE_I2C_EEPROM
       fram.write(mem_WUNDERGROUND_HUMIDITY_ID,humidity1_sensor_type);
+    #endif
+
+    // wunderground time source 
+    #ifdef USE_SPI_FRAM
+      fram.writeEnable(true);
+      fram.write8(mem_WUNDERGROUND_TIME_SOURCE,WundergroundTimeSource);
+      fram.writeEnable(false);
+    #endif
+    #ifdef USE_I2C_FRAM
+      fram.write(mem_WUNDERGROUND_TIME_SOURCE,WundergroundTimeSource);
+    #endif
+    #ifdef USE_I2C_EEPROM
+      fram.write(mem_WUNDERGROUND_TIME_SOURCE,WundergroundTimeSource);
     #endif
 }
 #endif

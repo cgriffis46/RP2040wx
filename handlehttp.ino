@@ -220,7 +220,17 @@ if (!server.authenticate(dev_user,dev_password)){
   if(WundergroundInfceEnable==true){
     Page += F("checked");
   }
-  Page += F(" name='e'/>");
+  Page += F(" name='e'/><br />");
+
+  Page += F("<Label for 'WundergroundTimeSource'>Time Source </label>");
+  Page += F("<select name='z' id='WundergroundTimeSource'>");
+  Page += F("<option value='1'");if(WundergroundTimeSource==1){Page += F("selected");} Page += F(">ntc</option>");
+  #ifdef _USE_RTC
+    Page += F("<option value='2'");if(WundergroundTimeSource==2){Page += F("selected");} Page += F(">rtc</option>");
+  #endif
+  Page += F("<option value='3'");if(WundergroundTimeSource==3){Page += F("selected");} Page += F(">&now</option>");
+  Page += F("</select><br />");
+
   Page += F("<br /><label>Wunderground ID</label>");
   Page += F("<input type='text' placeholder='ID'");
 
@@ -229,7 +239,6 @@ if (!server.authenticate(dev_user,dev_password)){
       Page += String(WundergroundStationID);
       Page += F("'");
   }
-
   Page += F(" name='i'/>");
   Page += F("<br /><label>Wunderground Password</label>");
   Page += F("<input type='text' placeholder='password' value='");
@@ -258,7 +267,7 @@ if (!server.authenticate(dev_user,dev_password)){
       Page += F("<option value='15'");if(thermometer1Type==15){Page += F("selected");} Page += F(">soiltempf2</option>");
       Page += F("<option value='16'");if(thermometer1Type==16){Page += F("selected");} Page += F(">soiltemp34</option>");
     }
-    Page += F("</select><br />");
+  Page += F("</select><br />");
   //
   Page += F("<Label for 'WundergroundHumidity1ID'>Humidity Sensor ID </label>");
   Page += F("<select name='h' id='WundergroundHumidity1ID'>");

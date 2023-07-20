@@ -68,6 +68,7 @@ void updatePressureSensorHandler();
 #define mem_WUNDERGROUND_ENABLE (uint32_t)0x0100
 #define mem_WUNDERGROUND_TEMP_ID (uint32_t)0x0101
 #define mem_WUNDERGROUND_HUMIDITY_ID (uint32_t)0x0102
+#define mem_WUNDERGROUND_TIME_SOURCE (uint32_t)0x0103
 
 #define mem_WUNDERGROUNDID (uint32_t)0x0125
 #define mem_WUNDERGROUNDPASSWORD (uint32_t)0x0150
@@ -222,6 +223,7 @@ IPAddress wundergroundIP(0,0,0,0);
 const char *url = "weatherstation.wunderground.com";
 
 DateTime now;
+DateTime ntptime;
 WiFiUDP wifiUdp;
 NTPClient timeClient(wifiUdp);
 
@@ -241,10 +243,12 @@ NTPClient timeClient(wifiUdp);
   String Wundergroundpayload;
   String WundergroundHTTPString;
   String WundergroundResponse;
+  String date_str;
   int WundergroundResponseCode;
 
   uint8_t thermometer1Type = 1;
   uint8_t humidity1_sensor_type = 1;
+  uint8_t WundergroundTimeSource = 3;
 #endif
 
 #define USE_CWOP_REST
