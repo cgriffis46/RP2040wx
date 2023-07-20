@@ -137,8 +137,8 @@ void UpdateWundergroundInfce(){
               break;
             }
         }}
-
       #endif
+
       // Send barometric pressure if necessary 
       #ifdef _INFCE_SEND_BAROMETRIC_PRESSURE
         if(QueueBarometerForInterfaces==true){

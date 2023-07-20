@@ -214,7 +214,7 @@ if (!server.authenticate(dev_user,dev_password)){
 
   Page += F("<h1>wunderground</h1>");
   Page += F("</table>");
-  Page += F("\r\n<form method='POST' action='wundergroundsave'>");
+  Page += F("<form method='POST' action='wundergroundsave'>");
   Page += F("<label>Enable</label>");
   Page += F("<input type='checkbox' ");
   if(WundergroundInfceEnable==true){
@@ -231,7 +231,7 @@ if (!server.authenticate(dev_user,dev_password)){
   Page += F("<option value='3'");if(WundergroundTimeSource==3){Page += F("selected");} Page += F(">ntp</option>");
   Page += F("</select><br />");
 
-  Page += F("<br /><label>Wunderground ID</label>");
+  Page += F("<label>Wunderground ID</label>");
   Page += F("<input type='text' placeholder='ID'");
 
   if(strlen(WundergroundStationID)>0){
