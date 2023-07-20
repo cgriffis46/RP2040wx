@@ -1,3 +1,4 @@
+#ifdef USE_WUNDERGROUND_INFCE
 void UpdateWundergroundInfce(){
 //  now = rtc.now();
   WiFi.hostByName(url,wundergroundIP);
@@ -373,4 +374,4 @@ void SaveWundergroundCredentials(){
       fram.write(mem_WUNDERGROUND_HUMIDITY_ID,humidity1_sensor_type);
     #endif
 }
-
+#endif

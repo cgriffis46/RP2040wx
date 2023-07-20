@@ -5,19 +5,6 @@
 #include <stdio.h>
 
 extern TwoWire Wire1;
-//#include "hardware/irq.h"
-//#include "hardware/clocks.h"
-//#include "hardware/pio.h"
-//#include "piointerrupt.pio.h"
-
-
-//#include <Adafruit_PM25AQI.h>
-//Adafruit_PM25AQI aqi = Adafruit_PM25AQI();
-
-//#include <HardwareSerial.h>
-
-//#include <SoftwareSerial.h>
-//SerialPIO receiver(SerialPIO::NOPIN,9,32);
 
 void ShouldUpdateWundergroundInterfaceTicker();
 void readTempHumiditySensor();
@@ -28,9 +15,6 @@ void updatePressureSensorHandler();
 
 #include <HTTPClient.h>
 #include <base64.h>
-
-//#include <Adafruit_EEPROM_I2C.h>
-//#include <Adafruit_FRAM_I2C.h>
 
 #define USE_I2C_EEPROM true
 #define USE_SHT31  true
@@ -263,6 +247,9 @@ NTPClient timeClient(wifiUdp);
   uint8_t humidity1_sensor_type = 1;
 #endif
 
+#define USE_CWOP_REST
+
+#ifdef USE_CWOP_REST
 
 #define CWOPIDLENGTH 32
 
@@ -276,6 +263,7 @@ char CWOPGPSLONG[CWOPIDLENGTH] = "";
 #define mem_CWOP_ID (uint32_t)0x0500
 #define mem_CWOP_GPS_LAT (uint32_t)0x0525
 #define mem_CWOP_GPS_LON (uint32_t)0x0550
+#endif
 
 Ticker updateWundergroundTicker(ShouldUpdateWundergroundInterfaceTicker,5,0);
 
@@ -290,8 +278,6 @@ void setup() {
   // put your setup code here, to run once:
 
   Serial.begin(115200);
-
- // while(!Serial);
 
   Wire1.setSDA(2);
   Wire1.setSCL(3);
@@ -333,7 +319,6 @@ void setup() {
     WiFi.softAPConfig(apIP, apIP, netMsk);
     softAP_password = dev_password;
 
-    
     WiFi.softAP(softAP_ssid, softAP_password);
 
     delay(500);  // Without delay I've seen the IP address blank

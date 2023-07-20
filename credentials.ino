@@ -376,9 +376,6 @@ void saveHumidityToDisk(){
       fram.write(mem_INFCE_HUMIDITY_ENABLE,0);
     #endif
     }
-
-    
-
 }
 
 void RestoreDefaults(){
@@ -421,15 +418,11 @@ void RestoreDefaults(){
     }
 }
 
+// Save device user and device password to NVRAM
 void SaveDeviceCredentials(){
   uint32_t address;
   char ok[2 + 1];
   uint8_t buffer1[512];
- // Serial.print("SSID: ");Serial.println(ssid);
- // Serial.print("Password: ");Serial.println(password);
- // memcpy(buffer1, (void *)&ssid, sizeof(ssid));
- // String("user").toCharArray(dev_user, sizeof(dev_user));
- // String("password").toCharArray(dev_password, sizeof(dev_password));
   for(address = 0; address <sizeof(dev_user);address++){
     buffer1[address] = (uint8_t)dev_user[address];
     #ifdef USE_SPI_FRAM
