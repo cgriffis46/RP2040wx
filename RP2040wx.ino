@@ -1,18 +1,11 @@
 #include <Wire.h>
-
 //#include <FreeRTOS.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 extern TwoWire Wire1;
 
-void ShouldUpdateWundergroundInterfaceTicker();
-void readTempHumiditySensor();
-void updatePressureSensorHandler();
-//void PPSInterrupt();
-//typedef void(* 	irq_handler_t)(void);
 #include <Ticker.h>
-
 #include <HTTPClient.h>
 #include <base64.h>
 
@@ -32,19 +25,11 @@ void updatePressureSensorHandler();
 
 #ifdef USE_SPI_FRAM
   #include <Adafruit_FRAM_SPI.h>
-#endif
-
-#ifdef USE_SPI_FRAM
   uint8_t FRAM_SCK = 14;
   uint8_t FRAM_MISO = 12;
   uint8_t FRAM_MOSI = 13;
   uint8_t FRAM_CS = 15;
   Adafruit_FRAM_SPI fram = Adafruit_FRAM_SPI(FRAM_SCK, FRAM_MISO, FRAM_MOSI, FRAM_CS);
-#endif
-
-#ifdef USE_I2C_FRAM
-//Adafruit_EEPROM_I2C fram = Adafruit_EEPROM_I2C();
-//  Adafruit_FRAM_I2C fram = Adafruit_FRAM_I2C();
 #endif
 
 #define mem_SSID (uint32_t)0x0000
@@ -89,9 +74,11 @@ void updatePressureSensorHandler();
 #endif
 
 #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
+  void updatePressureSensorHandler();
   Ticker PressureSensorTicker(updatePressureSensorHandler,2,0);
   bool QueueBarometerForInterfaces = false;
   float pressure, PressureOffset;
+  float pressureInHg;
   float externalPressureOffset; 
 #endif
 
@@ -118,15 +105,14 @@ void updatePressureSensorHandler();
   #endif
 #endif
 
-
 #ifdef _USE_TH_SENSOR
+  void readTempHumiditySensor();
   Ticker readTHSensorTicker(readTempHumiditySensor,2,0);
   float temperature, humidity;
   float tempf, tempc;
   bool QueueThermometerForInterfaces = false;
   bool QueueHumidityForInterfaces = false;
   bool UseCelcius = false;
-
 #endif
 
 #include <NTPClient.h>
@@ -166,6 +152,7 @@ void updatePressureSensorHandler();
 #define pgmStateConnectAdafruitIO 35
 #define pgmStateWaitForAIO 36
 
+void ShouldUpdateWundergroundInterfaceTicker();
 
 /* Soft AP network parameters */
 IPAddress apIP(172, 217, 28, 1);
