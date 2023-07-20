@@ -5,8 +5,6 @@
 #include <stdio.h>
 
 extern TwoWire Wire1;
-
-
 //#include "hardware/irq.h"
 //#include "hardware/clocks.h"
 //#include "hardware/pio.h"
@@ -196,8 +194,8 @@ IPAddress netMsk(255, 255, 255, 0);
 const char *softAP_ssid = APSSID;
 const char *softAP_password = APPSK;
 
-#define WIFI_SSID "IoT"
-#define WIFI_PASS "iotpassword"
+#define WIFI_SSID "ssid"
+#define WIFI_PASS "password"
 
 /* hostname for mDNS. Should work at least on windows. Try http://esp8266.local */
 const char *myHostname = "esp8266";
@@ -239,10 +237,15 @@ uint8_t ConnectionAttempts = 0;
 IPAddress wundergroundIP(0,0,0,0);
 const char *url = "weatherstation.wunderground.com";
 
+
 DateTime now;
 WiFiUDP wifiUdp;
 NTPClient timeClient(wifiUdp);
 
+// Wunderground interface 
+#define USE_WUNDERGROUND_INFCE
+
+#ifdef USE_WUNDERGROUND_INFCE 
 String WUurl = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?";
 String WU_station_id; //Wunderground station ID
 String WU_station_pwd; //# Wunderground station password
@@ -259,6 +262,8 @@ int WundergroundResponseCode;
 
 uint8_t thermometer1Type = 1;
 uint8_t humidity1_sensor_type = 1;
+#endif
+
 
 #define CWOPIDLENGTH 32
 
