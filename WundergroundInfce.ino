@@ -12,6 +12,7 @@ void UpdateWundergroundInfce(){
     if(client.connected()){
       // Assemble date_str
       date_str = "";
+    #ifdef _USE_RTC
       switch (WundergroundTimeSource){ 
         case 1:{
           date_str = "&dateutc=now";
@@ -22,11 +23,14 @@ void UpdateWundergroundInfce(){
           break;
         }
         case 3:{
-
             date_str = String(F("&dateutc="))+String(now.year())+F("-")+String(now.month())+F("-")+String(now.day())+String(F("+"))+String(now.hour())+String(F("%3A"))+String(now.minute())+String(F("%3A"))+String(now.second());
           break;
         }
       }
+    #endif
+    #ifndef _USE_RTC
+      date_str = "&dateutc=now";
+    #endif
       if(!date_str.length()>0){
         date_str = "&dateutc=now";
       }
