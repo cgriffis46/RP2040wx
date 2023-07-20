@@ -248,7 +248,7 @@ NTPClient timeClient(wifiUdp);
 
   uint8_t thermometer1Type = 1;
   uint8_t humidity1_sensor_type = 1;
-  uint8_t WundergroundTimeSource = 3;
+  uint8_t WundergroundTimeSource = 1;
 #endif
 
 #define USE_CWOP_REST

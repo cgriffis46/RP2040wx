@@ -224,11 +224,11 @@ if (!server.authenticate(dev_user,dev_password)){
 
   Page += F("<Label for 'WundergroundTimeSource'>Time Source </label>");
   Page += F("<select name='z' id='WundergroundTimeSource'>");
-  Page += F("<option value='1'");if(WundergroundTimeSource==1){Page += F("selected");} Page += F(">ntc</option>");
+  Page += F("<option value='1'");if(WundergroundTimeSource==1){Page += F("selected");} Page += F(">&now</option>");
   #ifdef _USE_RTC
     Page += F("<option value='2'");if(WundergroundTimeSource==2){Page += F("selected");} Page += F(">rtc</option>");
   #endif
-  Page += F("<option value='3'");if(WundergroundTimeSource==3){Page += F("selected");} Page += F(">&now</option>");
+  Page += F("<option value='3'");if(WundergroundTimeSource==3){Page += F("selected");} Page += F(">ntp</option>");
   Page += F("</select><br />");
 
   Page += F("<br /><label>Wunderground ID</label>");

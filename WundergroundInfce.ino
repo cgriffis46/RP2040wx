@@ -14,7 +14,7 @@ void UpdateWundergroundInfce(){
       date_str = "";
       switch (WundergroundTimeSource){ 
         case 1:{
-          date_str = String(F("&dateutc="))+String(now.year())+F("-")+String(now.month())+F("-")+String(now.day())+String(F("+"))+String(now.hour())+String(F("%3A"))+String(now.minute())+String(F("%3A"))+String(now.second());
+          date_str = "&dateutc=now";
           break;
         }
         case 2:{
@@ -22,7 +22,8 @@ void UpdateWundergroundInfce(){
           break;
         }
         case 3:{
-            date_str = "&dateutc=now";
+
+            date_str = String(F("&dateutc="))+String(now.year())+F("-")+String(now.month())+F("-")+String(now.day())+String(F("+"))+String(now.hour())+String(F("%3A"))+String(now.minute())+String(F("%3A"))+String(now.second());
           break;
         }
       }
