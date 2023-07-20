@@ -237,7 +237,6 @@ uint8_t ConnectionAttempts = 0;
 IPAddress wundergroundIP(0,0,0,0);
 const char *url = "weatherstation.wunderground.com";
 
-
 DateTime now;
 WiFiUDP wifiUdp;
 NTPClient timeClient(wifiUdp);
@@ -246,22 +245,22 @@ NTPClient timeClient(wifiUdp);
 #define USE_WUNDERGROUND_INFCE
 
 #ifdef USE_WUNDERGROUND_INFCE 
-String WUurl = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?";
-String WU_station_id; //Wunderground station ID
-String WU_station_pwd; //# Wunderground station password
-String WUcreds;  // = "ID=" + WU_station_id + "&PASSWORD="+ WU_station_pwd;
+  String WUurl = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?";
+  String WU_station_id; //Wunderground station ID
+  String WU_station_pwd; //# Wunderground station password
+  String WUcreds;  // = "ID=" + WU_station_id + "&PASSWORD="+ WU_station_pwd;
 
-bool shouldUpdateWundergroundInfce = false;
-bool WundergroundInfceEnable = false;
-char WundergroundStationID[WundergroundStationIDLength] = "";
-char WundergroundStationPassword[WundergroundStationIDPassword] = "";
-String Wundergroundpayload;
-String WundergroundHTTPString;
-String WundergroundResponse;
-int WundergroundResponseCode;
+  bool shouldUpdateWundergroundInfce = false;
+  bool WundergroundInfceEnable = false;
+  char WundergroundStationID[WundergroundStationIDLength] = "";
+  char WundergroundStationPassword[WundergroundStationIDPassword] = "";
+  String Wundergroundpayload;
+  String WundergroundHTTPString;
+  String WundergroundResponse;
+  int WundergroundResponseCode;
 
-uint8_t thermometer1Type = 1;
-uint8_t humidity1_sensor_type = 1;
+  uint8_t thermometer1Type = 1;
+  uint8_t humidity1_sensor_type = 1;
 #endif
 
 
@@ -333,6 +332,8 @@ void setup() {
     // setup AP for captive portal configuration
     WiFi.softAPConfig(apIP, apIP, netMsk);
     softAP_password = dev_password;
+
+    
     WiFi.softAP(softAP_ssid, softAP_password);
 
     delay(500);  // Without delay I've seen the IP address blank
@@ -447,7 +448,7 @@ void loop() {
       }
       else if(s==WL_CONNECT_FAILED){
           ConnectionAttempts++;
-          if(ConnectionAttempts<10){
+          if(ConnectionAttempts<5){
             connectWifi();
           }
           else{
@@ -455,6 +456,7 @@ void loop() {
                 WiFi.mode(WIFI_AP_STA);
                 // setup AP for captive portal configuration
                 WiFi.softAPConfig(apIP, apIP, netMsk);
+
                 WiFi.softAP(softAP_ssid, softAP_password);
 
                 delay(500);  // Without delay I've seen the IP address blank
