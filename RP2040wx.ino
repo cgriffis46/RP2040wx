@@ -251,18 +251,19 @@ NTPClient timeClient(wifiUdp);
 
 #ifdef USE_CWOP_REST
 
-#define CWOPIDLENGTH 32
+  #define CWOPIDLENGTH 32
 
-bool shouldUpdateCWOPInfce = false;
-bool EnableCWOPRestInfce = false;
-String CWOPRestURL;
-char CWOPID[CWOPIDLENGTH] = "";
-char CWOPGPSLAT[CWOPIDLENGTH] = "";
-char CWOPGPSLONG[CWOPIDLENGTH] = "";
+  bool shouldUpdateCWOPInfce = false;
+  bool EnableCWOPRestInfce = false;
+  String CWOPRestURL;
+  char CWOPID[CWOPIDLENGTH] = "";
+  char CWOPGPSLAT[CWOPIDLENGTH] = "";
+  char CWOPGPSLONG[CWOPIDLENGTH] = "";
 
-#define mem_CWOP_ID (uint32_t)0x0500
-#define mem_CWOP_GPS_LAT (uint32_t)0x0525
-#define mem_CWOP_GPS_LON (uint32_t)0x0550
+  #define mem_CWOP_ID (uint32_t)0x0500
+  #define mem_CWOP_GPS_LAT (uint32_t)0x0525
+  #define mem_CWOP_GPS_LON (uint32_t)0x0550
+
 #endif
 
 Ticker updateWundergroundTicker(ShouldUpdateWundergroundInterfaceTicker,5,0);
