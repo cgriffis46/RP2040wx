@@ -371,9 +371,6 @@ void setup() {
 
 void loop() {
   unsigned int s = WiFi.status();
-  //Serial.print("wifi status"); Serial.println(s);
-  //Serial.print("Program State: ");Serial.println(pgmState);
-  //Serial.print("Wifi Status: ");Serial.println(s);
 
   now = rtc.now();
 
@@ -541,7 +538,6 @@ void loop() {
      }
      else {
       Serial.println("not connected!");
-      //ntpUptdateTicker.detach();
       pgmState == pgmStateWaitForConnect;}
       break;
     } // end pgmStateCheckWifi
@@ -551,10 +547,6 @@ void loop() {
 
     // Update interfaces if necesssary 
     if(WiFi.status() == WL_CONNECTED){
-
-       // MDNS. (const uint32_t p_u32AnswerIndex)
-        //WiFi.
-        //io.run();
         updateWundergroundTicker.update();
        if(shouldUpdateWundergroundInfce){
           shouldUpdateWundergroundInfce = false; // ticker will change to true
