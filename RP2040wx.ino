@@ -77,11 +77,16 @@ extern TwoWire Wire1;
   #ifndef USE_BAROMETRIC_PRESSURE_SENSOR
     #define USE_BAROMETRIC_PRESSURE_SENSOR true
   #endif
-#ifndef _INFCE_SEND_BAROMETRIC_PRESSURE
+  #ifndef _INFCE_SEND_BAROMETRIC_PRESSURE
     #define _INFCE_SEND_BAROMETRIC_PRESSURE true
   #endif
+  // GPIO Pin Definitions
+  #define BMP_SCK  (6)
+  #define BMP_MISO (8)
+  #define BMP_MOSI (7)
+  #define BMP_CS   (9)
+  Adafruit_BMP280 bmp(BMP_CS, BMP_MOSI, BMP_MISO,  BMP_SCK);
 #endif
-
 #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
 //  void updatePressureSensorHandler();
 //  Ticker PressureSensorTicker(updatePressureSensorHandler,2,0);
