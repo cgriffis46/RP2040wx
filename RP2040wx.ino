@@ -72,10 +72,20 @@ extern TwoWire Wire1;
   #endif
   Adafruit_MPL3115A2  mpl3115a2;
 #endif
+#ifdef USE_BMP280
+  #include <Adafruit_BMP280.h>
+  #ifndef USE_BAROMETRIC_PRESSURE_SENSOR
+    #define USE_BAROMETRIC_PRESSURE_SENSOR true
+  #endif
+#ifndef _INFCE_SEND_BAROMETRIC_PRESSURE
+    #define _INFCE_SEND_BAROMETRIC_PRESSURE true
+  #endif
+#endif
 
 #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
 //  void updatePressureSensorHandler();
 //  Ticker PressureSensorTicker(updatePressureSensorHandler,2,0);
+void ReadPressureSensor();
   bool QueueBarometerForInterfaces = false;
   float pressure, PressureOffset;
   float pressureInHg;
@@ -293,15 +303,18 @@ void setup() {
   }
   #endif
 
+  connect = strlen(ssid)>0;  // Request WLAN connect if there is a SSID
+  ConnectionAttempts = 0;
+
   // Start NTP 
   timeClient.begin();
 
-  if(strlen(ssid)>0){
+  if(connect){
     Serial.println(ssid);
   }
 
   // we don't have a wifi SSID yet. Open captive portal to obtain credentials. 
-  if(!strlen(ssid)>0){
+  if(!connect){
     Serial.println("No SSID found. Starting AP");
 
     WiFi.mode(WIFI_AP_STA);
@@ -338,8 +351,6 @@ void setup() {
   server.on("/restoredefaults",RestoreDefaults);
   server.begin();  // Web server start
   Serial.println("HTTP server started");
-  connect = strlen(ssid)>0;  // Request WLAN connect if there is a SSID
-  ConnectionAttempts = 0;
 
   // if ready to connect to wifi, try connecting
   if(connect){
@@ -583,17 +594,19 @@ void loop() {
 
 void setup1(){
 
+#ifdef USE_SHT31
   if (! sht31.begin()) {   // Set to 0x45 for alternate i2c addr
       Serial.println("Couldn't find SHT31");
     while (1) delay(1);
   }
+#endif
 
-  #ifdef USE_MPL3115A2
+#ifdef USE_MPL3115A2
     if (!mpl3115a2.begin(&Wire1)) {
       Serial.println("Could not find sensor. Check wiring.");
     while(1);
   }
-  #endif
+#endif
 
     updateWundergroundTicker.start();
 //    readTHSensorTicker.start();
@@ -604,8 +617,7 @@ void setup1(){
 void loop1(){
 
   readTempHumiditySensor();
-
-  pressure = mpl3115a2.getPressure()*0.02953+PressureOffset;
+  ReadPressureSensor();
 
   delay(1000);
 
@@ -651,49 +663,6 @@ void ShouldUpdateWundergroundInterfaceTicker(){
     shouldUpdateWundergroundInfce = false;
     }
   return;
-}
-
-void readTempHumiditySensor(){
-  float t = sht31.readTemperature();
-  float h = sht31.readHumidity();
-
-  if (! isnan(t)) {  // check if 'is not a number'
-//    Serial.print("Temp *C = "); Serial.print(t); Serial.print("\t\t");
-    temperature = t;
-    tempc = temperature;
-    tempf = (temperature * 1.8) + 32;
-  } else { 
-    Serial.println("Failed to read temperature");
-  }
-  
-  if (! isnan(h)) {  // check if 'is not a number'
-//    Serial.print("Hum. % = "); Serial.println(h);
-    humidity = h;
-  } else { 
-    Serial.println("Failed to read humidity");
-  }
-
-  pressure = mpl3115a2.getPressure()*0.02953+PressureOffset;
-
-//  delay(1000);
-
-  // Toggle heater enabled state every 30 seconds
-  // An ~3.0 degC temperature increase can be noted when heater is enabled
-  if (loopCnt >= 30) {
-    enableHeater = !enableHeater;
-    sht31.heater(enableHeater);
-    Serial.print("Heater Enabled State: ");
-    if (sht31.isHeaterEnabled())
-      Serial.println("ENABLED");
-    else
-      Serial.println("DISABLED");
-
-    loopCnt = 0;
-  }
-  loopCnt++;
-
-
-
 }
 
 void enableHeaterHandler(){
