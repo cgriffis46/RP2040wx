@@ -1,3 +1,5 @@
+#define wx_version String("00.00.10");
+
 #include <Wire.h>
 //#include <FreeRTOS.h>
 #include <stdlib.h>
@@ -273,7 +275,7 @@ NTPClient timeClient(wifiUdp);
 Ticker updateWundergroundTicker(ShouldUpdateWundergroundInterfaceTicker,5,0);
 
 String action_str = "&action=updateraw";
-String W_Software_Type = "&softwaretype=esp8266wx%20version00";
+String W_Software_Type = "&softwaretype=rp2040wx%20version"+wx_version;
 
 HTTPClient httpWunderground;
 WiFiClient client;
