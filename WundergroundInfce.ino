@@ -1,4 +1,36 @@
 #ifdef USE_WUNDERGROUND_INFCE
+
+// Define sensor types accepted by Wunderground interface 
+enum {
+  WU_S_TEMPC_T = 1,
+  WU_S_TEMPC2_T = 2,
+  WU_S_TEMPC3_T = 3,
+  WU_S_TEMPC4_T = 4,
+  WU_S_INDOORTEMPC_T = 5,
+  WU_S_SOILTEMPC_T = 6,
+  WU_S_SOILTEMPC2_T = 7,
+  WU_S_SOILTEMPC3_T = 8,
+  WU_S_TEMPF_T = 9,
+  WU_S_TEMPF2_T = 10,
+  WU_S_TEMPF3_T = 11,
+  WU_S_TEMPF4_T = 12,
+  WU_S_INDOORTEMPF_T = 13,
+  WU_S_SOILTEMPF_T = 14,
+  WU_S_SOILTEMPF2_T = 15,
+  WU_S_SOILTEMPF3_T = 16,
+  WU_S_BAROMIN_T = 17,
+  WU_S_HUMIDITY_T = 18,
+  WU_S_INDOORHUMIDITY_T = 19
+
+
+} Wu_Sensor_t;
+
+enum {
+  WU_NOW_T = 1,
+  WU_RTC_T = 2,
+  WU_NTP_T = 3
+} Wu_Time_t;
+
 void UpdateWundergroundInfce(){
 //  now = rtc.now();
   WiFi.hostByName(url,wundergroundIP);
@@ -14,15 +46,15 @@ void UpdateWundergroundInfce(){
       date_str = "";
     #ifdef _USE_RTC
       switch (WundergroundTimeSource){ 
-        case 1:{
+        case WU_NOW_T:{
           date_str = "&dateutc=now";
           break;
         }
-        case 2:{
+        case WU_RTC_T:{
           date_str = String(F("&dateutc="))+String(now.year())+F("-")+String(now.month())+F("-")+String(now.day())+String(F("+"))+String(now.hour())+String(F("%3A"))+String(now.minute())+String(F("%3A"))+String(now.second());
           break;
         }
-        case 3:{
+        case WU_NTP_T:{ // not implemented
             date_str = String(F("&dateutc="))+String(now.year())+F("-")+String(now.month())+F("-")+String(now.day())+String(F("+"))+String(now.hour())+String(F("%3A"))+String(now.minute())+String(F("%3A"))+String(now.second());
           break;
         }
@@ -41,82 +73,82 @@ void UpdateWundergroundInfce(){
       if(QueueThermometerForInterfaces){
 
         switch (thermometer1Type) {
-          case 1: 
+          case WU_S_TEMPC_T: 
           {
             Wundergroundpayload += F("&tempc=");Wundergroundpayload += String(tempc);
             break;
           }
-          case 2: 
+          case WU_S_TEMPC2_T: 
           {
             Wundergroundpayload += F("&tempc2=");Wundergroundpayload += String(tempc);
             break;
           }
-          case 3: 
+          case WU_S_TEMPC3_T: 
           {
             Wundergroundpayload += F("&tempc3=");Wundergroundpayload += String(tempc);
             break;
           }
-          case 4:
+          case WU_S_TEMPC4_T:
           {
             Wundergroundpayload += F("&tempc4=") ;Wundergroundpayload += String(tempc);
             break;
           }
-          case 5:
+          case WU_S_INDOORTEMPC_T:
           {
             Wundergroundpayload += F("&indoortempc=");Wundergroundpayload += String(tempc);
             break;
           }
-          case 6:
+          case WU_S_SOILTEMPC_T:
+          {
+            Wundergroundpayload += F("&soiltempc=");Wundergroundpayload += String(tempc);
+            break;
+          }
+          case WU_S_SOILTEMPC2_T:
           {
             Wundergroundpayload += F("&soiltempc2=");Wundergroundpayload += String(tempc);
             break;
           }
-          case 7:
+          case WU_S_SOILTEMPC3_T:
           {
             Wundergroundpayload += F("&soiltempc3=");Wundergroundpayload += String(tempc);
             break;
           }
-          case 8:
-          {
-            Wundergroundpayload += F("&soiltempc4=");Wundergroundpayload += String(tempc);
-            break;
-          }
-          case 9:
+          case WU_S_TEMPF_T:
           {
             Wundergroundpayload += F("&tempf=");Wundergroundpayload += String(tempf);
             break;
           }
-          case 10:
+          case WU_S_TEMPF2_T:
           {
             Wundergroundpayload += F("&tempf2=");Wundergroundpayload += String(tempf);
             break;
           }
-          case 11:
+          case WU_S_TEMPF3_T:
           {
             Wundergroundpayload += F("&tempf3=");Wundergroundpayload += String(tempf);
             break;
           }
-          case 12:
+          case WU_S_TEMPF4_T:
           {
             Wundergroundpayload += F("&tempf4=");Wundergroundpayload += String(tempf);
             break;
           }
-          case 13:
+          case WU_S_INDOORTEMPF_T:
           {
             Wundergroundpayload += F("&indoortempf=");Wundergroundpayload += String(tempf);
             break;
           }
-          case 14:
+          case WU_S_SOILTEMPF_T:
           {
             Wundergroundpayload += F("&soiltempf=");Wundergroundpayload += String(tempf);
             break;
           }
-          case 15:
+          case WU_S_SOILTEMPF2_T:
           {
             Wundergroundpayload += F("&soiltempf2=");Wundergroundpayload += String(tempf);
             break;
           }
-          case 16:
+          case WU_S_SOILTEMPF3_T:
           {
             Wundergroundpayload += F("&soiltempf3=");Wundergroundpayload += String(tempf);
             break;
