@@ -36,7 +36,10 @@ enum {
   String WundergroundResponse;
   String date_str;
   int WundergroundResponseCode;
-
+  String WUurl = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?";
+  String WU_station_id; //Wunderground station ID
+  String WU_station_pwd; //# Wunderground station password
+  String WUcreds;  // = "ID=" + WU_station_id + "&PASSWORD="+ WU_station_pwd;
 
 void UpdateWundergroundInfce(){
 //  now = rtc.now();
