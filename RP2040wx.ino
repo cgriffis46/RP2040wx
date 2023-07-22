@@ -544,9 +544,12 @@ void loop() {
         pgmState == pgmStateWaitForConnect;
         break;
      }
+     else if(s==WL_DISCONNECTED){
+       pgmState = pgmStateWifiConnect;
+     }
      else {
       Serial.println("not connected!");
-      pgmState == pgmStateWaitForConnect;}
+      pgmState = pgmStateWifiConnect;}
       break;
     } // end pgmStateCheckWifi
 
