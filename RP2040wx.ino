@@ -233,20 +233,10 @@ NTPClient timeClient(wifiUdp);
 #define USE_WUNDERGROUND_INFCE
 
 #ifdef USE_WUNDERGROUND_INFCE 
-//  String WUurl = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?";
-//  String WU_station_id; //Wunderground station ID
-//  String WU_station_pwd; //# Wunderground station password
-//  String WUcreds;  // = "ID=" + WU_station_id + "&PASSWORD="+ WU_station_pwd;
-
   bool shouldUpdateWundergroundInfce = false;
   bool WundergroundInfceEnable = false;
   char WundergroundStationID[WundergroundStationIDLength] = "";
   char WundergroundStationPassword[WundergroundStationIDPassword] = "";
-//  String Wundergroundpayload;
-//  String WundergroundHTTPString;
-//  String WundergroundResponse;
-//  String date_str;
-//  int WundergroundResponseCode;
 
   uint8_t thermometer1Type = 1;
   uint8_t humidity1_sensor_type = 1;
