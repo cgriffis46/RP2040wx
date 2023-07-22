@@ -224,11 +224,11 @@ if (!server.authenticate(dev_user,dev_password)){
 
   Page += F("<Label for 'WundergroundTimeSource'>Time Source </label>");
   Page += F("<select name='z' id='WundergroundTimeSource'>");
-  Page += F("<option value='1'");if(WundergroundTimeSource==1){Page += F("selected");} Page += F(">&now</option>");
+  Page += F("<option value='1'");if(WundergroundTimeSource==WU_NOW_T){Page += F("selected");} Page += F(">&now</option>");
   #ifdef _USE_RTC
-    Page += F("<option value='2'");if(WundergroundTimeSource==2){Page += F("selected");} Page += F(">rtc</option>");
+    Page += F("<option value='2'");if(WundergroundTimeSource==WU_RTC_T){Page += F("selected");} Page += F(">rtc</option>");
   #endif
-  Page += F("<option value='3'");if(WundergroundTimeSource==3){Page += F("selected");} Page += F(">ntp</option>");
+  Page += F("<option value='3'");if(WundergroundTimeSource==WU_NTP_T){Page += F("selected");} Page += F(">ntp</option>");
   Page += F("</select><br />");
 
   Page += F("<label>Wunderground ID</label>");
@@ -247,12 +247,12 @@ if (!server.authenticate(dev_user,dev_password)){
     Page += F("<Label for 'WundergroundThermometerID'>Thermometer ID </label>");
     Page += F("<select name='t' id='WundergroundThermometerID'>");
     if(UseCelcius){
-      Page += F("<option value='1'");if(thermometer1Type==1){Page += F("selected");} Page += F(">tempc</option>");
-      Page += F("<option value='2'");if(thermometer1Type==2){Page += F("selected");} Page += F(">tempc2</option>");
-      Page += F("<option value='3'");if(thermometer1Type==3){Page += F("selected");} Page += F(">tempc3</option>");
-      Page += F("<option value='4'");if(thermometer1Type==4){Page += F("selected");} Page += F(">tempc4</option>");
-      Page += F("<option value='5'");if(thermometer1Type==5){Page += F("selected");} Page += F(">indoortempc</option>");
-      Page += F("<option value='6'");if(thermometer1Type==6){Page += F("selected");} Page += F(">soiltempc</option>");
+      Page += F("<option value='");Page + String(WU_S_TEMPC_T);Page += ("'");if(thermometer1Type==WU_S_TEMPC_T){Page += F("selected");} Page += F(">tempc</option>");
+      Page += F("<option value='");Page + String(WU_S_TEMPC2_T);Page += ("'");if(thermometer1Type==WU_S_TEMPC2_T){Page += F("selected");} Page += F(">tempc2</option>");
+      Page += F("<option value='");Page + String(WU_S_TEMPC3_T);if(thermometer1Type==WU_S_TEMPC3_T){Page += F("selected");} Page += F(">tempc3</option>");
+      Page += F("<option value='");Page + String(WU_S_TEMPC4_T);if(thermometer1Type==WU_S_TEMPC4_T){Page += F("selected");} Page += F(">tempc4</option>");
+      Page += F("<option value='");Page + String(WU_S_INDOORTEMPC_T);if(thermometer1Type==WU_S_INDOORTEMPC_T){Page += F("selected");} Page += F(">indoortempc</option>");
+      Page += F("<option value='");Page + String(WU_S_SOILTEMPC_T);if(thermometer1Type==WU_S_SOILTEMPC_T){Page += F("selected");} Page += F(">soiltempc</option>");
       Page += F("<option value='7'");if(thermometer1Type==7){Page += F("selected");} Page += F(">soiltempc2</option>");
       Page += F("<option value='8'");if(thermometer1Type==8){Page += F("selected");} Page += F(">soiltempc3</option>");
     }
@@ -271,8 +271,8 @@ if (!server.authenticate(dev_user,dev_password)){
   //
   Page += F("<Label for 'WundergroundHumidity1ID'>Humidity Sensor ID </label>");
   Page += F("<select name='h' id='WundergroundHumidity1ID'>");
-  Page += F("<option value='1'");if(humidity1_sensor_type==1){Page += F("selected");} Page += F(">humidity</option>");
-  Page += F("<option value='2'");if(humidity1_sensor_type==2){Page += F("selected");} Page += F(">indoorhumidity</option>");
+  Page += F("<option value='18'");if(humidity1_sensor_type==WU_S_HUMIDITY_T){Page += F("selected");} Page += F(">humidity</option>");
+  Page += F("<option value='19'");if(humidity1_sensor_type==WU_S_INDOORHUMIDITY_T){Page += F("selected");} Page += F(">indoorhumidity</option>");
   Page += F("</select><br />");
   Page += F("<br /><input type='submit' value='Save'/></form>");
   Page += F("<br />");

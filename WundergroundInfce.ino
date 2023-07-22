@@ -31,6 +31,13 @@ enum {
   WU_NTP_T = 3
 } Wu_Time_t;
 
+  String Wundergroundpayload;
+  String WundergroundHTTPString;
+  String WundergroundResponse;
+  String date_str;
+  int WundergroundResponseCode;
+
+
 void UpdateWundergroundInfce(){
 //  now = rtc.now();
   WiFi.hostByName(url,wundergroundIP);
@@ -160,11 +167,11 @@ void UpdateWundergroundInfce(){
         
         if(QueueHumidityForInterfaces){
         switch (humidity1_sensor_type) {
-            case 1: {
+            case WU_S_HUMIDITY_T: {
               Wundergroundpayload += "&humidity="+String(humidity,2);
               break;
             }
-            case 2: {
+            case WU_S_INDOORHUMIDITY_T: {
               Wundergroundpayload += "&indoorhumidity="+String(humidity,2);
               break;
             }
