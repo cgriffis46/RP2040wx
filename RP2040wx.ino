@@ -24,7 +24,9 @@
 #include <timers.h>
 #include <task.h>
 
-
+//#define INCLUDE_vTaskSuspend
+//#define configUSE_TIMERS = 1
+//#define configSUPPORT_STATIC_ALLOCATION
 
 //TaskHandle_t xSHT31TaskHandle = NULL;
 //TaskHandle_t xMPL3115A2Handle = NULL;
@@ -38,9 +40,6 @@
 
 void readSensors();
 
-//#define INCLUDE_vTaskSuspend
-//#define configUSE_TIMERS = 1
-#define configSUPPORT_STATIC_ALLOCATION
 extern TwoWire Wire1;
 
 #include <Ticker.h>
@@ -729,8 +728,6 @@ void loop1(){
 
 }
 
-
-
 void connectWifi() {
   Serial.println("Connecting as wifi client ");
   Serial.println(ssid);
@@ -756,15 +753,6 @@ void ShouldUpdateWundergroundInterfaceTicker(){
     shouldUpdateWundergroundInfce = false;
     }
   return;
-}
-
-void enableHeaterHandler(){
-
-}
-
-void updatePressureSensorHandler(){
-  pressure = mpl3115a2.getPressure()*0.02953+PressureOffset;
-  Serial.print("Pressure =");Serial.print(pressure);Serial.println("inHg");
 }
 
 void readSensors(){
