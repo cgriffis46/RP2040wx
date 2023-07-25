@@ -1,10 +1,46 @@
 #define wx_version String("00.00.10");
 
+#define USE_RP2040_PICO
+
+#ifdef USE_RP2040_PICO
+#include "hardware/irq.h"
+#include "hardware/rtc.h"
+#include "hardware/gpio.h"
+//#include "hardware/stdio.h"
+#include "pico/stdlib.h"
+#include "pico/util/datetime.h"
+#include "pico/stdio.h"
+#endif
+
 #include <Wire.h>
-//#include <FreeRTOS.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 
+//#define USE_FREERTOS true
+
+#ifdef USE_FREERTOS
+#include <FreeRTOS.h>
+#include <timers.h>
+#include <task.h>
+
+
+
+//TaskHandle_t xSHT31TaskHandle = NULL;
+//TaskHandle_t xMPL3115A2Handle = NULL;
+
+//xTimerHandle xSHT31TimerHandle;
+//xTimerHandle xReadSensorTimerHandle;  
+//TaskHandle_t xReadSensorTimerHandle;
+//TimerHandle_t xReadSensorTimerHandle;
+
+#endif
+
+void readSensors();
+
+//#define INCLUDE_vTaskSuspend
+//#define configUSE_TIMERS = 1
+#define configSUPPORT_STATIC_ALLOCATION
 extern TwoWire Wire1;
 
 #include <Ticker.h>
@@ -270,7 +306,10 @@ String W_Software_Type = "&softwaretype=rp2040wx%20version"+wx_version;
 HTTPClient httpWunderground;
 WiFiClient client;
 
+
+
 void setup() {
+ // gpio.stdio_init_all();
   WiFiMode_t mode;  
   // put your setup code here, to run once:
 
@@ -279,6 +318,8 @@ void setup() {
   Wire1.setSDA(2);
   Wire1.setSCL(3);
   
+ // gpio_set_function(15,);
+
   // Initialize NVRAM
   Serial.println("Initialize NVRAM");
   if(fram.begin(0x50)){
@@ -290,10 +331,26 @@ void setup() {
     Serial.println("could not initialize fram");
   }
 
+  // System RTC
+  rtc_init();
+
+  // If using an external RTC 
   #ifdef _USE_RTC
     Serial.println("Initialize RTC");
     if(rtc.begin(&Wire)){
     now = rtc.now();
+
+    datetime_t t = {
+            .year  = now.year(),
+            .month = now.month(),
+            .day   = now.day(),
+            .dotw  = now.dayOfTheWeek(), // 0 is Sunday, so 5 is Friday
+            .hour  = now.hour(),
+            .min   = now.minute(),
+            .sec   = now.second()
+    };
+    // Set the Device RTC from the External RTC 
+    rtc_set_datetime(&t);
   }
   else {
     Serial.println("Could not initialize RTC!");
@@ -380,7 +437,8 @@ void setup() {
 void loop() {
   unsigned int s = WiFi.status();
 
-  now = rtc.now();
+  //now = rtc.now();
+  //rtc_get_datetime(&now);
 
   if (WiFi.status() == WL_CONNECTED) { MDNS.update(); } else { pgmState = pgmStateWifiConnect; }
   dnsServer.processNextRequest();
@@ -389,7 +447,25 @@ void loop() {
    // timeClient must be called every loop to update NTP time 
       if(timeClient.update()) {
           if(timeClient.isTimeSet()){
-            rtc.adjust(DateTime(timeClient.getEpochTime()));
+            // adjust the external RTC
+
+            #ifdef _USE_RTC
+              rtc.adjust(now = DateTime(timeClient.getEpochTime()));
+            #endif
+            #ifndef _USE_RTC
+              now = DateTime(timeClient.getEpochTime());
+            #endif
+            //timeClient.
+            datetime_t t = {
+              .year  = now.year(),
+              .month = now.month(),
+              .day   = now.day(),
+              .dotw  = now.dayOfTheWeek(), // 0 is Sunday, so 5 is Friday
+              .hour  = now.hour(),
+              .min   = now.minute(),
+              .sec   = now.second()
+              };
+            rtc_set_datetime(&t);
             Serial.println("Updated RTC time!");}
       }
       else {
@@ -595,30 +671,45 @@ void loop() {
 void setup1(){
 
 #ifdef USE_SHT31
-  if (! sht31.begin()) {   // Set to 0x45 for alternate i2c addr
+  if (sht31.begin()) {   // Set to 0x45 for alternate i2c addr
+
+    //xSHT31TimerHandle = xTimerCreate("SHT31",10000,pdTRUE,(void *) 0,readTempHumiditySensor);
+//xSHT31TimerHandle.
+
+   // xTimerStart(xSHT31TimerHandle,0);
+  }
+  else{
       Serial.println("Couldn't find SHT31");
     while (1) delay(1);
   }
 #endif
 
 #ifdef USE_MPL3115A2
-    if (!mpl3115a2.begin(&Wire1)) {
+    if (mpl3115a2.begin(&Wire1)) {
+ //     xMPL3115A2TimerHandle = xTimerCreate("MPL3115A2",10000,pdTRUE,(void *) 0,ReadPressureSensor);
+   //   xTimerStart(xMPL3115A2TimerHandle,0);
+    }
+    else{
       Serial.println("Could not find sensor. Check wiring.");
     while(1);
   }
 #endif
-
+ //     xReadSensorTimerHandle = xTimerCreate("sensors",10000,pdTRUE,(void *) 0,readSensors);
+  //    xTimerStart(xReadSensorTimerHandle,0);
+   //  xTaskCreate(readSensors,"sensors",128, nullptr, 1, nullptr);
     updateWundergroundTicker.start();
 //    readTHSensorTicker.start();
 //    PressureSensorTicker.start();
 }
 
-
 void loop1(){
 
-  readTempHumiditySensor();
-  ReadPressureSensor();
+ // readTempHumiditySensor();
+ // ReadPressureSensor();
 
+ //vTaskStartScheduler();
+
+  readSensors();
   delay(1000);
 
   // Toggle heater enabled state every 30 seconds
@@ -637,6 +728,8 @@ void loop1(){
   loopCnt++;
 
 }
+
+
 
 void connectWifi() {
   Serial.println("Connecting as wifi client ");
@@ -674,7 +767,10 @@ void updatePressureSensorHandler(){
   Serial.print("Pressure =");Serial.print(pressure);Serial.println("inHg");
 }
 
-void PPSInterrupt(){
-  now = rtc.now();
-  Serial.println("pps");
+void readSensors(){
+//  (void)param;
+  readTempHumiditySensor();
+  ReadPressureSensor();
 }
+
+

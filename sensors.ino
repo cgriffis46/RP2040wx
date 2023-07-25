@@ -1,5 +1,9 @@
+
+
 #ifdef _USE_TH_SENSOR
 void readTempHumiditySensor(){
+
+ // (void) param;
 
 #ifdef USE_SHT31
   float t = sht31.readTemperature();
@@ -48,6 +52,7 @@ void readTempHumiditySensor(){
 #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
 
 void ReadPressureSensor(){
+ // (void)param;
     #ifdef USE_MPL3115A2
       pressure = mpl3115a2.getPressure()*0.02953+PressureOffset;
     #endif
