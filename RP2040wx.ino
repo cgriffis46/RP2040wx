@@ -638,6 +638,8 @@ void loop() {
           shouldUpdateWundergroundInfce = false; // ticker will change to true
          UpdateWundergroundInfce();
           }
+        pgmState = pgmStateIdle;
+        break;
     }
   else {
     if(strlen(ssid)>0){
@@ -647,14 +649,15 @@ void loop() {
     }
     break;
   }
-  pgmState = pgmStateIdle;
   break;
   } // end case pgmStateDoWork
 
     case pgmStateIdle:
   { 
     if(WiFi.status()==WL_CONNECTED){ // if we're already connected, sleep for 5 seconds
+      
       pgmState = pgmStateCheckWifi;
+      sleep_ms(100);
      // ESP.deepSleep(5000000);
     }
     else{ // if we are not connected, sleep for .1ms to poll for credentials
@@ -709,7 +712,7 @@ void loop1(){
  //vTaskStartScheduler();
 
   readSensors();
-  delay(1000);
+  //delay(1000);
 
   // Toggle heater enabled state every 30 seconds
   // An ~3.0 degC temperature increase can be noted when heater is enabled
@@ -726,6 +729,7 @@ void loop1(){
   }
   loopCnt++;
 
+  sleep_ms(2000);
 }
 
 void connectWifi() {

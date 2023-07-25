@@ -173,7 +173,7 @@ void UpdateWundergroundInfce(){
         }
 
         }
-        
+        // Add humidity to update string 
         if(QueueHumidityForInterfaces){
         switch (humidity1_sensor_type) {
             case WU_S_HUMIDITY_T: {
