@@ -330,14 +330,14 @@ void setup() {
     Serial.println("could not initialize fram");
   }
 
-  // System RTC
-  rtc_init();
-
-  // If using an external RTC 
+  // Set the internal RTC using an external RTC
   #ifdef _USE_RTC
     Serial.println("Initialize RTC");
     if(rtc.begin(&Wire)){
-    now = rtc.now();
+      #ifdef _USE_DS3231
+        rtc.writeSqwPinMode(DS3231_SquareWave1Hz);
+      #endif
+      now = rtc.now();
 
     datetime_t t = {
             .year  = now.year(),
@@ -348,13 +348,24 @@ void setup() {
             .min   = now.minute(),
             .sec   = now.second()
     };
-    // Set the Device RTC from the External RTC 
+    // Set the RP2040 internal RTC from the External RTC 
     rtc_set_datetime(&t);
   }
   else {
     Serial.println("Could not initialize RTC!");
   }
+
+  // Set the RP2040 internal RTC to use the 1hz from the DS3231
+   #ifdef _USE_DS3231
+    gpio_set_function(20,GPIO_FUNC_GPCK);
+    clocks_init();
+    clock_configure(clk_rtc,CLOCKS_CLK_RTC_CTRL_AUXSRC_VALUE_CLKSRC_GPIN0,0,1,1);
+
+   #endif // 
   #endif
+
+    // System RTC
+    rtc_init();
 
   connect = strlen(ssid)>0;  // Request WLAN connect if there is a SSID
   ConnectionAttempts = 0;
