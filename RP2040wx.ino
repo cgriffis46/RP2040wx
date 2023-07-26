@@ -357,9 +357,9 @@ void setup() {
 
   // Set the RP2040 internal RTC to use the 1hz from the DS3231
    #ifdef _USE_DS3231
-    gpio_set_function(20,GPIO_FUNC_GPCK);
-    clocks_init();
-    clock_configure(clk_rtc,CLOCKS_CLK_RTC_CTRL_AUXSRC_VALUE_CLKSRC_GPIN0,0,1,1);
+//    gpio_set_function(20,GPIO_FUNC_GPCK);
+//    clocks_init();
+//    clock_configure(clk_rtc,CLOCKS_CLK_RTC_CTRL_AUXSRC_VALUE_CLKSRC_GPIN0,0,1,1);
 
    #endif // 
   #endif
@@ -756,7 +756,7 @@ void connectWifi() {
 void ShouldUpdateWundergroundInterfaceTicker(){
  
   if(WiFi.status()==WL_CONNECTED){
-    if(WundergroundInfceEnable&&(strlen(WundergroundStationID)>0)&&(strlen(WundergroundStationPassword)>0)){
+    if(WundergroundInfceEnable&&(strlen(WundergroundStationID)>0)&&(strlen(WundergroundStationPassword)>0)&&rtc_running()){
         shouldUpdateWundergroundInfce = true;}
     else{
       shouldUpdateWundergroundInfce = false;}
@@ -773,5 +773,3 @@ void readSensors(){
   readTempHumiditySensor();
   ReadPressureSensor();
 }
-
-

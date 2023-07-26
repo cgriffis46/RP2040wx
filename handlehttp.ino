@@ -57,7 +57,9 @@ if (!server.authenticate("user","password")){
   }
   Page += F("\r\n<br />");
   Page += F("<table><tr><th align='left'>Time:");
-  Page += String(now.hour(),DEC) + String(":") + String(now.minute(),DEC) + String(":") + String(now.second(),DEC);
+  datetime_t now;
+  rtc_get_datetime(&now);
+  Page += String(now.hour,DEC) + String(":") + String(now.min,DEC) + String(":") + String(now.sec,DEC);
   Page += String("</th></tr>");               
   Page += String(F("\r\n<br />"
                    "<table><tr><th align='left'>SoftAP config</th></tr>"
