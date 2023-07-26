@@ -430,7 +430,6 @@ void setup() {
     Serial.print("Mode: ");Serial.println(mode);
   }
 
-
 }
 
 void loop() {

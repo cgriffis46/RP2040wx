@@ -55,8 +55,16 @@ void UpdateWundergroundInfce(){
       // Assemble date_str
       date_str = "";
       datetime_t now;
-      rtc_get_datetime(&now);
-      date_str = String(F("&dateutc="))+String(now.year)+F("-")+String(now.month)+F("-")+String(now.day)+String(F("+"))+String(now.hour)+String(F("%3A"))+String(now.min)+String(F("%3A"))+String(now.sec);
+
+      //date_str = String(F("&dateutc="))+String(now.year)+F("-")+String(now.month)+F("-")+String(now.day)+String(F("+"))+String(now.hour)+String(F("%3A"))+String(now.min)+String(F("%3A"))+String(now.sec);
+
+      if(rtc_running()){
+        rtc_get_datetime(&now);
+        date_str = String(F("&dateutc="))+String(now.year)+F("-")+String(now.month)+F("-")+String(now.day)+String(F("+"))+String(now.hour)+String(F("%3A"))+String(now.min)+String(F("%3A"))+String(now.sec);
+      }
+      else{
+        date_str = "&dateutc=now";
+      }
 /*  
     #ifdef _USE_RTC
       switch (WundergroundTimeSource){ 
