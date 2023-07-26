@@ -65,10 +65,6 @@ void ReadPressureSensor(){
         if(!updateWundergroundTicker.active()){
         updateWundergroundTicker.attach(5,ShouldUpdateWundergroundInterfaceTicker);}
       }
-//      if(!UpdateDisplayTicker.active()){
-//          UpdateDisplayTicker.attach(2,UpdateDisplayTickerHandler);
-//      }
-//      delay(2000);
 
     } else {
       Serial.println("Forced measurement failed!");

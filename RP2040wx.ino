@@ -751,7 +751,6 @@ void connectWifi() {
   int connRes = WiFi.waitForConnectResult();
   Serial.print("connRes: ");
   Serial.println(connRes);
-
 }
 
 void ShouldUpdateWundergroundInterfaceTicker(){
