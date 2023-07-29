@@ -127,7 +127,7 @@ extern TwoWire Wire1;
 #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
 //  void updatePressureSensorHandler();
 //  Ticker PressureSensorTicker(updatePressureSensorHandler,2,0);
-void ReadPressureSensor();
+static void ReadPressureSensor();
   bool QueueBarometerForInterfaces = false;
   float pressure, PressureOffset;
   float pressureInHg;
@@ -156,7 +156,7 @@ void ReadPressureSensor();
 #endif
 
 #ifdef _USE_TH_SENSOR
-  void readTempHumiditySensor();
+static  void readTempHumiditySensor();
 //  Ticker readTHSensorTicker(readTempHumiditySensor,2,0);
   float temperature, humidity;
   float tempf, tempc;
@@ -336,6 +336,7 @@ void setup() {
     if(rtc.begin(&Wire)){
       #ifdef _USE_DS3231
         rtc.writeSqwPinMode(DS3231_SquareWave1Hz);
+        rtc.enable32K();
       #endif
       now = rtc.now();
 
@@ -357,9 +358,11 @@ void setup() {
 
   // Set the RP2040 internal RTC to use the 1hz from the DS3231
    #ifdef _USE_DS3231
-//    gpio_set_function(20,GPIO_FUNC_GPCK);
-//    clocks_init();
-//    clock_configure(clk_rtc,CLOCKS_CLK_RTC_CTRL_AUXSRC_VALUE_CLKSRC_GPIN0,0,1,1);
+    gpio_set_function(20,GPIO_FUNC_GPCK);
+    gpio_pull_up(20);
+    clock_configure_gpin(clk_ref,20,32768,32768);
+    rtc_hw->clkdiv_m1 = 32767;
+    clocks_init();
 
    #endif // 
   #endif
@@ -441,10 +444,14 @@ void setup() {
     Serial.print("Mode: ");Serial.println(mode);
   }
 
+
+
 }
 
 void loop() {
   unsigned int s = WiFi.status();
+
+  //Serial.print("RTC frequency: ");Serial.println();
 
   //now = rtc.now();
   //rtc_get_datetime(&now);
@@ -476,6 +483,8 @@ void loop() {
               };
             rtc_set_datetime(&t);
             Serial.println("Updated RTC time!");}
+
+            Serial.println(rtc.readSqwPinMode(),HEX);
       }
       else {
       //          Serial.println("Could not update NTP time!");
@@ -554,7 +563,7 @@ void loop() {
     }
     break;
   }
-  case pgmStateWaitForConnect:  //non-blocking Wait for wifi connect
+  case pgmStateWaitForConnect:  // non-blocking Wait for wifi connect
   {
     Serial.print("Wifi Status: ");Serial.println(s = WiFi.status());
     if(s == WL_CONNECTED){
