@@ -356,8 +356,11 @@ void setup() {
     Serial.println("Could not initialize RTC!");
   }
 
-  // Set the RP2040 internal RTC to use the 1hz from the DS3231
+  // Set the RP2040 clk_ref to use the 32khz from the DS3231
+  // clk_rtc will divide the 32khz to 1hz 
    #ifdef _USE_DS3231
+
+
     gpio_set_function(20,GPIO_FUNC_GPCK);
     gpio_pull_up(20);
     clock_configure_gpin(clk_ref,20,32768,32768);
@@ -444,14 +447,12 @@ void setup() {
     Serial.print("Mode: ");Serial.println(mode);
   }
 
-
-
 }
 
 void loop() {
   unsigned int s = WiFi.status();
 
-  //Serial.print("RTC frequency: ");Serial.println();
+ // Serial.print("RTC frequency: ");Serial.println(frequency_count_khz(clk_ref));
 
   //now = rtc.now();
   //rtc_get_datetime(&now);
