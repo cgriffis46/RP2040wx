@@ -1,7 +1,7 @@
 
 
 #ifdef _USE_TH_SENSOR
-void readTempHumiditySensor(){
+static void readTempHumiditySensor(){
 
  // (void) param;
 

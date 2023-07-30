@@ -38,7 +38,7 @@
 
 #endif
 
-void readSensors();
+static void readSensors();
 
 extern TwoWire Wire1;
 
@@ -156,7 +156,7 @@ static void ReadPressureSensor();
 #endif
 
 #ifdef _USE_TH_SENSOR
-static  void readTempHumiditySensor();
+static void readTempHumiditySensor();
 //  Ticker readTHSensorTicker(readTempHumiditySensor,2,0);
   float temperature, humidity;
   float tempf, tempc;
@@ -769,7 +769,7 @@ void ShouldUpdateWundergroundInterfaceTicker(){
   return;
 }
 
-void readSensors(){
+static void readSensors(){
 //  (void)param;
   readTempHumiditySensor();
   ReadPressureSensor();
