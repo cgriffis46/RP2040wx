@@ -459,14 +459,12 @@ void loop() {
       if(timeClient.update()) {
           if(timeClient.isTimeSet()){
             // adjust the external RTC
-
             #ifdef _USE_RTC
               rtc.adjust(now = DateTime(timeClient.getEpochTime()));
             #endif
             #ifndef _USE_RTC
               now = DateTime(timeClient.getEpochTime());
             #endif
-            //timeClient.
             datetime_t t = {
               .year  = now.year(),
               .month = now.month(),
@@ -479,7 +477,6 @@ void loop() {
             rtc_set_datetime(&t);
             Serial.println("Updated RTC time!");}
 
-            Serial.println(rtc.readSqwPinMode(),HEX);
       }
       else {
       //          Serial.println("Could not update NTP time!");

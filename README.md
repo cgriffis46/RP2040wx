@@ -17,6 +17,11 @@
     Here you can add the credentials for the Wunderground interface. 
     
     Requires RP2040 pico w mcu board. 
+
+    Project was intended to use the DS3231 RTC as an external clock source. 
+    Connect the 32KHz output to GPIO20 and the 1Hz to GPIO22. 
+    The 1Hz will drive the RTC and the 32KHz will drive clk_ref. 
+
     Requires an Adafruit Fram or EEPROM to store credentials.
     #define USE_I2C_EEPROM
           &Wire()
