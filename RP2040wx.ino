@@ -17,27 +17,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-//#define USE_FREERTOS true
-
-#ifdef USE_FREERTOS
-#include <FreeRTOS.h>
-#include <timers.h>
-#include <task.h>
-
-//#define INCLUDE_vTaskSuspend
-//#define configUSE_TIMERS = 1
-//#define configSUPPORT_STATIC_ALLOCATION
-
-//TaskHandle_t xSHT31TaskHandle = NULL;
-//TaskHandle_t xMPL3115A2Handle = NULL;
-
-//xTimerHandle xSHT31TimerHandle;
-//xTimerHandle xReadSensorTimerHandle;  
-//TaskHandle_t xReadSensorTimerHandle;
-//TimerHandle_t xReadSensorTimerHandle;
-
-#endif
-
 static void readSensors();
 
 extern TwoWire Wire1;
@@ -276,6 +255,15 @@ NTPClient timeClient(wifiUdp);
   uint8_t thermometer1Type = 1;
   uint8_t humidity1_sensor_type = 1;
   uint8_t WundergroundTimeSource = 1;
+
+  Ticker updateWundergroundTicker(ShouldUpdateWundergroundInterfaceTicker,5,0);
+
+  String action_str = "&action=updateraw";
+  String W_Software_Type = "&softwaretype=rp2040wx%20version"+wx_version;
+
+  HTTPClient httpWunderground;
+  WiFiClient client;
+
 #endif
 
 #define USE_CWOP_REST
@@ -296,14 +284,6 @@ NTPClient timeClient(wifiUdp);
   #define mem_CWOP_GPS_LON (uint32_t)0x0550
 
 #endif
-
-Ticker updateWundergroundTicker(ShouldUpdateWundergroundInterfaceTicker,5,0);
-
-String action_str = "&action=updateraw";
-String W_Software_Type = "&softwaretype=rp2040wx%20version"+wx_version;
-
-HTTPClient httpWunderground;
-WiFiClient client;
 
 void setup() {
   WiFiMode_t mode;  
