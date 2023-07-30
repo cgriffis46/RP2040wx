@@ -4,6 +4,8 @@
 /*  By: Cory S Griffis
     7/17/2023
 
+    v00.00.20
+
     Simple weather station program to grab environmental data from sensors and upload to Wunderground. 
     Captive portal simplifies setting up the station, WiFi credentials and interfaces.
 
@@ -23,16 +25,21 @@
     The 1Hz will drive the RTC and the 32KHz will drive clk_ref. 
 
     Requires an Adafruit Fram or EEPROM to store credentials.
+
+    This project uses Wire() for RTC and EEPROM and Wire1() for I2C sensors. 
+
     #define USE_I2C_EEPROM
           &Wire()
     #define USE_MPL3115A2 - MPL3115A2
           &Wire1()
           Wire1.setSDA(2);
           Wire1.setSCL(3);
-    //Can be setup to use a DS3231 type RTC.
 
-    //Can be setup to use the following sensors:
-    
+    //Can be setup to use the following sensors. 
+    //
+      // SHT31
+      // MPL3115A2
+      // 
     // 
 
 */

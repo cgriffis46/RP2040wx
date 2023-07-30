@@ -1,4 +1,4 @@
-#define wx_version String("00.00.10");
+#define wx_version String("00.00.20");
 
 #define USE_RP2040_PICO
 
