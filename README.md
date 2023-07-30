@@ -20,6 +20,11 @@
 
     From the browser, determine the WiFi IP. and navigate to http://<deviceip>/config
     Here you can add the credentials for the Wunderground interface. 
+
+    http://<deviceip>/wifi - wifi config
+    http://<deviceip>/config - wunderground interface config
+    http://<deviceip>/sensors - sensor offsets and units
+    http://<deviceip>/weather - current conditions
     
     Requires RP2040 pico w mcu board. 
 
