@@ -1,3 +1,6 @@
+![rp2040wx_fritz_bb](https://github.com/cgriffis46/RP2040wx/assets/78368880/f782d777-d45e-46a9-9e4c-c5149565e536)
+
+
 # RP2040wx
  RP2040 Weather Station
 
