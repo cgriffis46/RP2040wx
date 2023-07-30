@@ -305,20 +305,12 @@ String W_Software_Type = "&softwaretype=rp2040wx%20version"+wx_version;
 HTTPClient httpWunderground;
 WiFiClient client;
 
-
-
 void setup() {
- // gpio.stdio_init_all();
   WiFiMode_t mode;  
-  // put your setup code here, to run once:
-
   Serial.begin(115200);
-
+  // setup I2C2 bus 
   Wire1.setSDA(2);
   Wire1.setSCL(3);
-  
- // gpio_set_function(15,);
-
   // Initialize NVRAM
   Serial.println("Initialize NVRAM");
   if(fram.begin(0x50)){
@@ -329,7 +321,6 @@ void setup() {
   else{
     Serial.println("could not initialize fram");
   }
-
   // Set the internal RTC using an external RTC
   #ifdef _USE_RTC
     Serial.println("Initialize RTC");
@@ -356,21 +347,24 @@ void setup() {
     Serial.println("Could not initialize RTC!");
   }
 
-  // Set the RP2040 clk_ref to use the 32khz from the DS3231
-  // clk_rtc will divide the 32khz to 1hz 
-   #ifdef _USE_DS3231
+   #ifdef _USE_DS3231 // configure system clocks to use ds3231 outputs
+    // Set the RP2040 clk_ref to use the 32khz from the DS3231
+    // Set the RP2040 clk_rtc to use the 1hz from the DS3231
+    // The 32KHz can be used a tick source or divided to 1Hz for clk_rtc
+    clock_stop(clk_ref);// Stop clk_ref to save power. DS3231 will provide external clock. 
+    clock_stop(clk_rtc);// clk_rtc is derived from clk_ref. We will use DS3231 1hz. 
+    gpio_set_function(20,GPIO_FUNC_GPCK); // configure rp2040 GPIO pin 20 for external clock
+    gpio_set_function(22,GPIO_FUNC_GPCK); // configure rp2040 GPIO pin 22 for external clock
+    gpio_pull_up(20); // Configure pullups if necessary 
+    gpio_pull_up(22); // Configure pullups if necessary 
+    clock_configure_gpin(clk_ref,20,32768,32768); // configure clk_ref to use external 32khz clock on pin 20
+    clock_configure_gpin(clk_rtc,22,1,1); // configure clk_rtc to use external 1hz clock on pin 22 
+    rtc_hw->clkdiv_m1 = 0; // configure rtc clock divider for 1hz
+    clocks_init(); // restart the clocks
+   #endif // configure clocks 
+  #endif // configure RTC 
 
-
-    gpio_set_function(20,GPIO_FUNC_GPCK);
-    gpio_pull_up(20);
-    clock_configure_gpin(clk_ref,20,32768,32768);
-    rtc_hw->clkdiv_m1 = 32767;
-    clocks_init();
-
-   #endif // 
-  #endif
-
-    // System RTC
+    // start the system RTC
     rtc_init();
 
   connect = strlen(ssid)>0;  // Request WLAN connect if there is a SSID
