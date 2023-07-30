@@ -1,3 +1,6 @@
+![rp2040wx_fritz_bb](https://github.com/cgriffis46/RP2040wx/assets/78368880/f782d777-d45e-46a9-9e4c-c5149565e536)
+
+
 # RP2040wx
  RP2040 Weather Station
 
@@ -18,11 +21,6 @@
     From the browser, determine the WiFi IP. and navigate to http://<deviceip>/config
     Here you can add the credentials for the Wunderground interface. 
     
-    http://<ipaddress>/wifi - wifi ssid and password
-    http://<ipaddress>/weather - current weather conditions
-    http://<ipaddress>/config - wunderground interface config
-    http://<ipaddress>/sensors - sensor offsets and units
-
     Requires RP2040 pico w mcu board. 
 
     Project was intended to use the DS3231 RTC as an external clock source. 
