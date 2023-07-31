@@ -1,7 +1,7 @@
 
 
 #ifdef _USE_TH_SENSOR
-static void readTempHumiditySensor(){
+static int64_t readTempHumiditySensor(alarm_id_t id, void *user_data){
 
  // (void) param;
 
@@ -45,13 +45,17 @@ static void readTempHumiditySensor(){
   loopCnt++;
 #endif
 
+  add_alarm_in_ms(1000, readTempHumiditySensor, NULL, false);
+
+  return 0;
+
 }
 
 #endif
 
 #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
 
-static void ReadPressureSensor(){
+static int64_t ReadPressureSensor(alarm_id_t id, void *user_data){
  // (void)param;
     #ifdef USE_MPL3115A2
       pressure = mpl3115a2.getPressure()*0.02953+PressureOffset;
@@ -70,6 +74,8 @@ static void ReadPressureSensor(){
       Serial.println("Forced measurement failed!");
     }
     #endif
+
+  return 0;
 
 }
 

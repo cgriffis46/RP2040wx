@@ -11,6 +11,7 @@
 #include "pico/util/datetime.h"
 #include "pico/stdio.h"
 #include "hardware/watchdog.h"
+#include "hardware/timer.h"
 #endif
 
 #include <Wire.h>
@@ -107,7 +108,7 @@ extern TwoWire Wire1;
 #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
 //  void updatePressureSensorHandler();
 //  Ticker PressureSensorTicker(updatePressureSensorHandler,2,0);
-static void ReadPressureSensor();
+static int64_t  ReadPressureSensor(alarm_id_t id, void *user_data);
   bool QueueBarometerForInterfaces = false;
   float pressure, PressureOffset;
   float pressureInHg;
@@ -136,7 +137,7 @@ static void ReadPressureSensor();
 #endif
 
 #ifdef _USE_TH_SENSOR
-static void readTempHumiditySensor();
+static int64_t readTempHumiditySensor(alarm_id_t id, void *user_data);
 //  Ticker readTHSensorTicker(readTempHumiditySensor,2,0);
   float temperature, humidity;
   float tempf, tempc;
@@ -676,6 +677,8 @@ void setup1(){
 
 #ifdef USE_SHT31
   if (sht31.begin()) {   // Initialize the SHT31 T/H Sensor
+      //hardware_alarm_set_callback(1,readTempHumiditySensor);
+      add_alarm_in_ms(1000, readTempHumiditySensor, NULL, false);
   }
   else{
       Serial.println("Couldn't find SHT31");
@@ -685,6 +688,7 @@ void setup1(){
 
 #ifdef USE_MPL3115A2 // Initialize the USE_MPL3115A2 Pressure sensor
     if (mpl3115a2.begin(&Wire1)) {
+        add_alarm_in_ms(1000, ReadPressureSensor, NULL, false);
     }
     else{
       Serial.println("Could not find sensor. Check wiring.");
@@ -696,7 +700,7 @@ void setup1(){
 
 void loop1(){
 
-  readSensors(); // Read environmental sensors
+  //readSensors(); // Read environmental sensors
   //delay(1000);
 
   // Toggle heater enabled state every 30 seconds
@@ -748,6 +752,6 @@ void ShouldUpdateWundergroundInterfaceTicker(){
 
 static void readSensors(){
 //  (void)param;
-  readTempHumiditySensor();
-  ReadPressureSensor();
+ // readTempHumiditySensor();
+  //ReadPressureSensor();
 }
