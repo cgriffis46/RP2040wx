@@ -10,6 +10,7 @@
 #include "pico/stdlib.h"
 #include "pico/util/datetime.h"
 #include "pico/stdio.h"
+#include "hardware/watchdog.h"
 #endif
 
 #include <Wire.h>
@@ -288,9 +289,12 @@ NTPClient timeClient(wifiUdp);
 void setup() {
   WiFiMode_t mode;  
   Serial.begin(115200);
-  // setup I2C2 bus 
-  Wire1.setSDA(2);
-  Wire1.setSCL(3);
+  // 
+  if(watchdog_caused_reboot()){
+    Serial.println("Watchdog caused reboot!!!!");
+  }else if(watchdog_enable_caused_reboot()){
+    Serial.println("Watchdog Enable caused reboot!!!!");
+  }
   // Initialize NVRAM
   Serial.println("Initialize NVRAM");
   if(fram.begin(0x50)){
@@ -347,6 +351,8 @@ void setup() {
     // start the system RTC
     rtc_init();
 
+  // initialize watchdog timer
+  
   connect = strlen(ssid)>0;  // Request WLAN connect if there is a SSID
   ConnectionAttempts = 0;
 
@@ -421,13 +427,15 @@ void setup() {
     Serial.print("Mode: ");Serial.println(mode);
   }
 
+  //watchdog_start_tick(1);
+  watchdog_enable(100000,1);
+
 }
 
 void loop() {
   unsigned int s = WiFi.status();
-
+  watchdog_update();
  // Serial.print("RTC frequency: ");Serial.println(frequency_count_khz(clk_ref));
-
   //now = rtc.now();
   //rtc_get_datetime(&now);
 
@@ -621,7 +629,6 @@ void loop() {
 
   case pgmStateDoWork:
   {
-
     // Update interfaces if necesssary 
     if(WiFi.status() == WL_CONNECTED){
         updateWundergroundTicker.update();
@@ -663,13 +670,12 @@ void loop() {
 
 void setup1(){
 
+  // setup I2C2 bus 
+  Wire1.setSDA(2);
+  Wire1.setSCL(3);
+
 #ifdef USE_SHT31
-  if (sht31.begin()) {   // Set to 0x45 for alternate i2c addr
-
-    //xSHT31TimerHandle = xTimerCreate("SHT31",10000,pdTRUE,(void *) 0,readTempHumiditySensor);
-//xSHT31TimerHandle.
-
-   // xTimerStart(xSHT31TimerHandle,0);
+  if (sht31.begin()) {   // Initialize the SHT31 T/H Sensor
   }
   else{
       Serial.println("Couldn't find SHT31");
@@ -677,32 +683,20 @@ void setup1(){
   }
 #endif
 
-#ifdef USE_MPL3115A2
+#ifdef USE_MPL3115A2 // Initialize the USE_MPL3115A2 Pressure sensor
     if (mpl3115a2.begin(&Wire1)) {
- //     xMPL3115A2TimerHandle = xTimerCreate("MPL3115A2",10000,pdTRUE,(void *) 0,ReadPressureSensor);
-   //   xTimerStart(xMPL3115A2TimerHandle,0);
     }
     else{
       Serial.println("Could not find sensor. Check wiring.");
     while(1);
   }
-#endif
- //     xReadSensorTimerHandle = xTimerCreate("sensors",10000,pdTRUE,(void *) 0,readSensors);
-  //    xTimerStart(xReadSensorTimerHandle,0);
-   //  xTaskCreate(readSensors,"sensors",128, nullptr, 1, nullptr);
-    updateWundergroundTicker.start();
-//    readTHSensorTicker.start();
-//    PressureSensorTicker.start();
+#endif 
+    updateWundergroundTicker.start(); // Start the 5 second timer for the Wunderground interface
 }
 
 void loop1(){
 
- // readTempHumiditySensor();
- // ReadPressureSensor();
-
- //vTaskStartScheduler();
-
-  readSensors();
+  readSensors(); // Read environmental sensors
   //delay(1000);
 
   // Toggle heater enabled state every 30 seconds
@@ -723,22 +717,25 @@ void loop1(){
   sleep_ms(2000);
 }
 
+// Connect to the Wifi SSID
 void connectWifi() {
   Serial.println("Connecting as wifi client ");
   Serial.println(ssid);
   Serial.println(password);
-//  WiFi.disconnect();
-  WiFi.begin(ssid, password);
-  int connRes = WiFi.waitForConnectResult();
-  Serial.print("connRes: ");
-  Serial.println(connRes);
+  WiFi.begin(ssid, password); // Connect to Wifi
+  //int connRes = WiFi.waitForConnectResult(); // Wait for Wifi to connect
+  //Serial.print("connRes: "); 
+  //Serial.println(connRes);
 }
 
+// Determines if we are ready to update the Wunderground interface. 
+// Was intended to be called by a ticker or timer. Main loop will
+// do the actual update. 
+// Needs to be updated to require a "last update" timestamp
 void ShouldUpdateWundergroundInterfaceTicker(){
- 
-  if(WiFi.status()==WL_CONNECTED){
-    if(WundergroundInfceEnable&&(strlen(WundergroundStationID)>0)&&(strlen(WundergroundStationPassword)>0)&&rtc_running()){
-        shouldUpdateWundergroundInfce = true;}
+   if(WiFi.status()==WL_CONNECTED){ // Must be connected to wifi to update wunderground 
+    if(WundergroundInfceEnable&&(strlen(WundergroundStationID)>0)&&(strlen(WundergroundStationPassword)>0)&&rtc_running()){ // require station ID, Password, Infce Enabled, and RTC to update interface
+        shouldUpdateWundergroundInfce = true;} //
     else{
       shouldUpdateWundergroundInfce = false;}
   }
