@@ -1,7 +1,7 @@
 
 
 #ifdef _USE_TH_SENSOR
-static int64_t readTempHumiditySensor(alarm_id_t id, void *user_data){
+static void readTempHumiditySensor(){
 
  // (void) param;
 
@@ -45,9 +45,7 @@ static int64_t readTempHumiditySensor(alarm_id_t id, void *user_data){
   loopCnt++;
 #endif
 
-  add_alarm_in_ms(1000, readTempHumiditySensor, NULL, false);
-
-  return 0;
+ // return 0;
 
 }
 
@@ -55,7 +53,7 @@ static int64_t readTempHumiditySensor(alarm_id_t id, void *user_data){
 
 #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
 
-static int64_t ReadPressureSensor(alarm_id_t id, void *user_data){
+static void ReadPressureSensor(){
  // (void)param;
     #ifdef USE_MPL3115A2
       pressure = mpl3115a2.getPressure()*0.02953+PressureOffset;
@@ -75,7 +73,7 @@ static int64_t ReadPressureSensor(alarm_id_t id, void *user_data){
     }
     #endif
 
-  return 0;
+  //return 0;
 
 }
 

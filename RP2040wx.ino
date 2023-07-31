@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static void readSensors();
+static int64_t readSensors(alarm_id_t id, void *user_data);
 
 extern TwoWire Wire1;
 
@@ -108,7 +108,7 @@ extern TwoWire Wire1;
 #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
 //  void updatePressureSensorHandler();
 //  Ticker PressureSensorTicker(updatePressureSensorHandler,2,0);
-static int64_t  ReadPressureSensor(alarm_id_t id, void *user_data);
+static void ReadPressureSensor();
   bool QueueBarometerForInterfaces = false;
   float pressure, PressureOffset;
   float pressureInHg;
@@ -137,7 +137,7 @@ static int64_t  ReadPressureSensor(alarm_id_t id, void *user_data);
 #endif
 
 #ifdef _USE_TH_SENSOR
-static int64_t readTempHumiditySensor(alarm_id_t id, void *user_data);
+static void readTempHumiditySensor();
 //  Ticker readTHSensorTicker(readTempHumiditySensor,2,0);
   float temperature, humidity;
   float tempf, tempc;
@@ -253,7 +253,7 @@ NTPClient timeClient(wifiUdp);
   bool WundergroundInfceEnable = false;
   char WundergroundStationID[WundergroundStationIDLength] = "";
   char WundergroundStationPassword[WundergroundStationIDPassword] = "";
-
+  struct repeating_timer WU_Update_timer;
   uint8_t thermometer1Type = 1;
   uint8_t humidity1_sensor_type = 1;
   uint8_t WundergroundTimeSource = 1;
@@ -428,6 +428,8 @@ void setup() {
     Serial.print("Mode: ");Serial.println(mode);
   }
 
+  add_alarm_in_ms(5000, WundergroundInterfaceCallback, NULL, false);
+  //add_repeating_timer_ms(5000, WundergroundInterfaceCallback, NULL, &WU_Update_timer);
   //watchdog_start_tick(1);
   watchdog_enable(100000,1);
 
@@ -632,11 +634,11 @@ void loop() {
   {
     // Update interfaces if necesssary 
     if(WiFi.status() == WL_CONNECTED){
-        updateWundergroundTicker.update();
+        //updateWundergroundTicker.update();
        if(shouldUpdateWundergroundInfce){
           shouldUpdateWundergroundInfce = false; // ticker will change to true
          UpdateWundergroundInfce();
-          }
+        }
         pgmState = pgmStateIdle;
         break;
     }
@@ -678,7 +680,6 @@ void setup1(){
 #ifdef USE_SHT31
   if (sht31.begin()) {   // Initialize the SHT31 T/H Sensor
       //hardware_alarm_set_callback(1,readTempHumiditySensor);
-      add_alarm_in_ms(1000, readTempHumiditySensor, NULL, false);
   }
   else{
       Serial.println("Couldn't find SHT31");
@@ -688,14 +689,15 @@ void setup1(){
 
 #ifdef USE_MPL3115A2 // Initialize the USE_MPL3115A2 Pressure sensor
     if (mpl3115a2.begin(&Wire1)) {
-        add_alarm_in_ms(1000, ReadPressureSensor, NULL, false);
+        //add_alarm_in_ms(1000, ReadPressureSensor, NULL, false);
     }
     else{
       Serial.println("Could not find sensor. Check wiring.");
     while(1);
   }
 #endif 
-    updateWundergroundTicker.start(); // Start the 5 second timer for the Wunderground interface
+  add_alarm_in_ms(1000, readSensors, NULL, false);
+    //updateWundergroundTicker.start(); // Start the 5 second timer for the Wunderground interface
 }
 
 void loop1(){
@@ -750,8 +752,16 @@ void ShouldUpdateWundergroundInterfaceTicker(){
   return;
 }
 
-static void readSensors(){
+static int64_t readSensors(alarm_id_t id, void *user_data){
 //  (void)param;
- // readTempHumiditySensor();
-  //ReadPressureSensor();
+  readTempHumiditySensor();
+  ReadPressureSensor();
+  return 0;
+}
+
+int64_t WundergroundInterfaceCallback(alarm_id_t id, void *user_data){
+  ShouldUpdateWundergroundInterfaceTicker();
+  //UpdateWundergroundInfce();
+  add_alarm_in_ms(5000, WundergroundInterfaceCallback, NULL, false);
+  return 0;
 }
