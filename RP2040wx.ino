@@ -428,7 +428,7 @@ void setup() {
     Serial.print("Mode: ");Serial.println(mode);
   }
 
-  add_alarm_in_ms(5000, WundergroundInterfaceCallback, NULL, false);
+  add_alarm_in_ms(5000, WundergroundInterfaceCallback, NULL, true);
   //add_repeating_timer_ms(5000, WundergroundInterfaceCallback, NULL, &WU_Update_timer);
   //watchdog_start_tick(1);
   watchdog_enable(100000,1);
@@ -696,7 +696,7 @@ void setup1(){
     while(1);
   }
 #endif 
-  add_alarm_in_ms(1000, readSensors, NULL, false);
+  add_alarm_in_ms(1000, readSensors, NULL, true);
     //updateWundergroundTicker.start(); // Start the 5 second timer for the Wunderground interface
 }
 
@@ -756,12 +756,13 @@ static int64_t readSensors(alarm_id_t id, void *user_data){
 //  (void)param;
   readTempHumiditySensor();
   ReadPressureSensor();
+  add_alarm_in_ms(1000, readSensors, NULL, true);
   return 0;
 }
 
 int64_t WundergroundInterfaceCallback(alarm_id_t id, void *user_data){
   ShouldUpdateWundergroundInterfaceTicker();
   //UpdateWundergroundInfce();
-  add_alarm_in_ms(5000, WundergroundInterfaceCallback, NULL, false);
+  add_alarm_in_ms(5000, WundergroundInterfaceCallback, NULL, true);
   return 0;
 }
