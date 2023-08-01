@@ -431,7 +431,9 @@ void setup() {
   add_alarm_in_ms(5000, WundergroundInterfaceCallback, NULL, true);
   //add_repeating_timer_ms(5000, WundergroundInterfaceCallback, NULL, &WU_Update_timer);
   //watchdog_start_tick(1);
-  watchdog_enable(10000,1);
+  // clk_ref is set to 32khz
+  // watchdog ticks will not be microseconds. 
+  watchdog_enable(15000,1);
 
 }
 
@@ -701,10 +703,6 @@ void setup1(){
 }
 
 void loop1(){
-
-  //readSensors(); // Read environmental sensors
-  //delay(1000);
-
   // Toggle heater enabled state every 30 seconds
   // An ~3.0 degC temperature increase can be noted when heater is enabled
   if (loopCnt >= 30) {
@@ -715,11 +713,9 @@ void loop1(){
       Serial.println("ENABLED");
     else
       Serial.println("DISABLED");
-
     loopCnt = 0;
   }
   loopCnt++;
-
   sleep_ms(2000);
 }
 
