@@ -431,7 +431,7 @@ void setup() {
   add_alarm_in_ms(5000, WundergroundInterfaceCallback, NULL, true);
   //add_repeating_timer_ms(5000, WundergroundInterfaceCallback, NULL, &WU_Update_timer);
   //watchdog_start_tick(1);
-  watchdog_enable(100000,1);
+  watchdog_enable(10000,1);
 
 }
 
