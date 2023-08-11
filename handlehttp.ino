@@ -56,11 +56,13 @@ if (!server.authenticate("user","password")){
   Page += F("<!DOCTYPE html><html lang='en'><head>"
             "<meta name='viewport' content='width=device-width'>"
             "<title>CaptivePortal</title></head><body>"
-            "<nav>"
-            "<a href='/weather'>weather</a>|"
-            "<a href='/wifi'>wifi</a>|"
-            "<a href='/sensors'>sensors</a>|"
+            "<nav style='border:1px solid black;'>"
+            "<ul>"
+            "<a href='/weather'>weather</a> | "
+            "<a href='/wifi'>wifi</a> | "
+            "<a href='/sensors'>sensors </a> | "
             "<a href='/config'>config</a>"
+            "</ul>"
             "</nav>"
             "<h1>Wifi config</h1>");
   if (server.client().localIP() == apIP) {
@@ -162,11 +164,13 @@ void handleWeather(){
   Page += F("<!DOCTYPE html><html lang='en'><head>"
             "<meta name='viewport' content='width=device-width'>"
             "<title>CaptivePortal</title></head><body>"
-            "<nav>"
-            "<a href='/weather'>weather</a>|"
-            "<a href='/wifi'>wifi</a>|"
-            "<a href='/sensors'>sensors</a>|"
+            "<nav style='border:1px solid black;'>"
+            "<ul>"
+            "<a href='/weather'>weather</a> | "
+            "<a href='/wifi'>wifi</a> | "
+            "<a href='/sensors'>sensors</a> | "
             "<a href='/config'>config</a>"
+            "</ul>"
             "</nav>"
             "<h1>Weather</h1>");
   Page += F("<table>");
@@ -213,11 +217,13 @@ if (!server.authenticate(dev_user,dev_password)){
   Page += F("<!DOCTYPE html><html lang='en'><head>"
             "<meta name='viewport' content='width=device-width'>"
             "<title>CaptivePortal</title></head><body>"
-            "<nav>"
-            "<a href='/weather'>weather</a>|"
-            "<a href='/wifi'>wifi</a>|"
-            "<a href='/sensors'>sensors</a>|"
+            "<nav style='border:1px solid black;'>"
+            "<ul>"
+            "<a href='/weather'>weather</a> | "
+            "<a href='/wifi'>wifi</a> | "
+            "<a href='/sensors'>sensors</a> | "
             "<a href='/config'>config</a>"
+            "</ul>"
             "</nav>");
   // User Credentials section
   Page += F("\r\n<form method='POST' action='savedevicecredentials'>");
@@ -343,11 +349,13 @@ void HandleSensors(){
     Page += F("<!DOCTYPE html><html lang='en'><head>"
             "<meta name='viewport' content='width=device-width'>"
             "<title>CaptivePortal</title></head><body>"
-            "<nav>"
-            "<a href='/weather'>weather</a>|"
-            "<a href='/wifi'>wifi</a>|"
-            "<a href='/sensors'>sensors</a>|"
+            "<nav style='border:1px solid black;'>"
+            "<ul>"
+            "<a href='/weather'>weather</a> | "
+            "<a href='/wifi'>wifi</a> | "
+            "<a href='/sensors'>sensors</a> | "
             "<a href='/config'>config</a>"
+            "</ul>"
             "</nav>");
 
 #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
