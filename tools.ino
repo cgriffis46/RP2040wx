@@ -1,3 +1,10 @@
+/*
+  Written by : Cory S Griffis
+  (C) 8/10/2010
+  Provided under MIT license. 
+  No warranty provided. 
+*/
+
 /** Is this an IP? */
 boolean isIp(String str) {
   for (size_t i = 0; i < str.length(); i++) {

@@ -1,3 +1,10 @@
+/*
+  Written by : Cory S Griffis
+  (C) 8/10/2010
+  Provided under MIT license. 
+  No warranty provided. 
+*/
+
 union{
   float pressureF;
   uint8_t bytes[4];

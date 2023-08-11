@@ -1,3 +1,11 @@
+/*
+  Written by : Cory S Griffis
+  (C) 8/10/2010
+  Provided under MIT license. 
+  No warranty provided. 
+*/
+
+
 #ifdef USE_WUNDERGROUND_INFCE
 
 // Define sensor types accepted by Wunderground interface 

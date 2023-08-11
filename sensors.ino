@@ -1,4 +1,9 @@
-
+/*
+  Written by : Cory S Griffis
+  (C) 8/10/2010
+  Provided under MIT license. 
+  No warranty provided. 
+*/
 
 #ifdef _USE_TH_SENSOR
 static void readTempHumiditySensor(){

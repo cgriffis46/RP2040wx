@@ -1,3 +1,10 @@
+/*
+  Written by : Cory S Griffis
+  (C) 8/10/2010
+  Provided under MIT license. 
+  No warranty provided. 
+*/
+
 /** Handle root or redirect to captive portal */
 void handleRoot() {
   if (captivePortal()) {  // If caprive portal redirect instead of displaying the page.
@@ -49,6 +56,12 @@ if (!server.authenticate("user","password")){
   Page += F("<!DOCTYPE html><html lang='en'><head>"
             "<meta name='viewport' content='width=device-width'>"
             "<title>CaptivePortal</title></head><body>"
+            "<nav>"
+            "<a href='/weather'>weather</a>|"
+            "<a href='/wifi'>wifi</a>|"
+            "<a href='/sensors'>sensors</a>|"
+            "<a href='/config'>config</a>"
+            "</nav>"
             "<h1>Wifi config</h1>");
   if (server.client().localIP() == apIP) {
     Page += String(F("<p>You are connected through the soft AP: ")) + softAP_ssid + F("</p>");
@@ -149,6 +162,12 @@ void handleWeather(){
   Page += F("<!DOCTYPE html><html lang='en'><head>"
             "<meta name='viewport' content='width=device-width'>"
             "<title>CaptivePortal</title></head><body>"
+            "<nav>"
+            "<a href='/weather'>weather</a>|"
+            "<a href='/wifi'>wifi</a>|"
+            "<a href='/sensors'>sensors</a>|"
+            "<a href='/config'>config</a>"
+            "</nav>"
             "<h1>Weather</h1>");
   Page += F("<table>");
 
@@ -193,7 +212,13 @@ if (!server.authenticate(dev_user,dev_password)){
   String Page;
   Page += F("<!DOCTYPE html><html lang='en'><head>"
             "<meta name='viewport' content='width=device-width'>"
-            "<title>CaptivePortal</title></head><body>");
+            "<title>CaptivePortal</title></head><body>"
+            "<nav>"
+            "<a href='/weather'>weather</a>|"
+            "<a href='/wifi'>wifi</a>|"
+            "<a href='/sensors'>sensors</a>|"
+            "<a href='/config'>config</a>"
+            "</nav>");
   // User Credentials section
   Page += F("\r\n<form method='POST' action='savedevicecredentials'>");
   Page += F("<form>");
@@ -317,7 +342,13 @@ void HandleSensors(){
     String Page;
     Page += F("<!DOCTYPE html><html lang='en'><head>"
             "<meta name='viewport' content='width=device-width'>"
-            "<title>CaptivePortal</title></head><body>");
+            "<title>CaptivePortal</title></head><body>"
+            "<nav>"
+            "<a href='/weather'>weather</a>|"
+            "<a href='/wifi'>wifi</a>|"
+            "<a href='/sensors'>sensors</a>|"
+            "<a href='/config'>config</a>"
+            "</nav>");
 
 #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
     Page += F("<h2>Barometer</h2>");

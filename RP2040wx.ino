@@ -1,17 +1,24 @@
+/*
+  Written by : Cory S Griffis
+  (C) 8/10/2010
+  Provided under MIT license. 
+  No warranty provided. 
+*/
+
 #define wx_version String("00.00.20");
 
 #define USE_RP2040_PICO
 
 #ifdef USE_RP2040_PICO
-#include "hardware/irq.h"
-#include "hardware/rtc.h"
-#include "hardware/gpio.h"
-//#include "hardware/stdio.h"
-#include "pico/stdlib.h"
-#include "pico/util/datetime.h"
-#include "pico/stdio.h"
-#include "hardware/watchdog.h"
-#include "hardware/timer.h"
+  #include "hardware/irq.h"
+  #include "hardware/rtc.h"
+  #include "hardware/gpio.h"
+  //#include "hardware/stdio.h"
+  #include "pico/stdlib.h"
+  #include "pico/util/datetime.h"
+  #include "pico/stdio.h"
+  #include "hardware/watchdog.h"
+  #include "hardware/timer.h"
 #endif
 
 #include <Wire.h>
@@ -445,8 +452,13 @@ void loop() {
   //rtc_get_datetime(&now);
 
   if (WiFi.status() == WL_CONNECTED) { MDNS.update(); } else { pgmState = pgmStateWifiConnect; }
+  watchdog_update();
+
   dnsServer.processNextRequest();
+  watchdog_update();
+
   server.handleClient();
+  watchdog_update();
 
    // timeClient must be called every loop to update NTP time 
       if(timeClient.update()) {
@@ -474,6 +486,8 @@ void loop() {
       else {
       //          Serial.println("Could not update NTP time!");
       }
+
+  watchdog_update();
 
   switch (pgmState) {
 
@@ -561,7 +575,9 @@ void loop() {
       break;
     }
     else if (s == WL_NO_SSID_AVAIL) {
+          watchdog_update();
           WiFi.disconnect();
+          watchdog_update();
 //          WiFi.enableAP(true); // enable AP so user can configure wifi credentials
           DoNotReconnectWifi = true;
           // wait 10 seconds before next reconnect attempt
@@ -610,7 +626,9 @@ void loop() {
      if(s == WL_CONNECTED) {
        
         if(ssid!=WiFi.SSID()&strlen(ssid)>0){ // SSID changed
+          watchdog_update();
           WiFi.disconnect();
+          watchdog_update();
           pgmState = pgmStateWifiConnect;
           break;
         }
@@ -639,7 +657,8 @@ void loop() {
         //updateWundergroundTicker.update();
        if(shouldUpdateWundergroundInfce){
           shouldUpdateWundergroundInfce = false; // ticker will change to true
-         UpdateWundergroundInfce();
+          watchdog_update();
+          UpdateWundergroundInfce();
         }
         pgmState = pgmStateIdle;
         break;
@@ -660,6 +679,7 @@ void loop() {
     if(WiFi.status()==WL_CONNECTED){ // if we're already connected, sleep for 5 seconds
       
       pgmState = pgmStateCheckWifi;
+      watchdog_update(); // update watchdog before sleep cycle
       sleep_ms(100);
      // ESP.deepSleep(5000000);
     }
@@ -724,7 +744,9 @@ void connectWifi() {
   Serial.println("Connecting as wifi client ");
   Serial.println(ssid);
   Serial.println(password);
+  watchdog_update();
   WiFi.begin(ssid, password); // Connect to Wifi
+  watchdog_update();
   //int connRes = WiFi.waitForConnectResult(); // Wait for Wifi to connect
   //Serial.print("connRes: "); 
   //Serial.println(connRes);
@@ -762,3 +784,5 @@ int64_t WundergroundInterfaceCallback(alarm_id_t id, void *user_data){
   add_alarm_in_ms(5000, WundergroundInterfaceCallback, NULL, true);
   return 0;
 }
+
+
