@@ -440,7 +440,7 @@ void setup() {
   //watchdog_start_tick(1);
   // clk_ref is set to 32khz
   // watchdog ticks will not be microseconds. 
-  watchdog_enable(15000,1);
+  watchdog_enable(30000,1);
 
 }
 
