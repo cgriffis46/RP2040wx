@@ -298,11 +298,12 @@ void setup() {
   WiFiMode_t mode;  
   Serial.begin(115200);
   // 
+  //while(!Serial);
   if(watchdog_caused_reboot()){
     Serial.println("Watchdog caused reboot!!!!");
   }else if(watchdog_enable_caused_reboot()){
     Serial.println("Watchdog Enable caused reboot!!!!");
-  }
+  }-
   // Initialize NVRAM
   Serial.println("Initialize NVRAM");
   if(fram.begin(0x50)){
@@ -440,7 +441,7 @@ void setup() {
   //watchdog_start_tick(1);
   // clk_ref is set to 32khz
   // watchdog ticks will not be microseconds. 
-  watchdog_enable(30000,1);
+  watchdog_enable(15000,1);
 
 }
 
@@ -659,6 +660,7 @@ void loop() {
           shouldUpdateWundergroundInfce = false; // ticker will change to true
           watchdog_update();
           UpdateWundergroundInfce();
+          watchdog_update();
         }
         pgmState = pgmStateIdle;
         break;

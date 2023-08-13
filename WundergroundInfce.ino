@@ -271,6 +271,10 @@ void UpdateWundergroundInfce(){
     Serial.println("WundergroundInterface is Disabled");
   }
   shouldUpdateWundergroundInfce = false;
+  if(httpWunderground.connected()){
+    httpWunderground.end();}
+  if(client.connected()){
+    client.stop();}
 }
 
 void handleWundergroundConfigSave(){
