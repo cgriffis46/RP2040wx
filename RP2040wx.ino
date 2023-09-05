@@ -1,3 +1,6 @@
+//#include <WiFi101.h>
+//#include <WiFiNINA.h>
+
 /*
   Written by : Cory S Griffis
   (C) 8/10/2010
@@ -19,9 +22,11 @@
   #include "pico/stdio.h"
   #include "hardware/watchdog.h"
   #include "hardware/timer.h"
+  #include "hardware/spi.h"
 #endif
 
 #include <Wire.h>
+#include <SPI.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,6 +34,8 @@
 static int64_t readSensors(alarm_id_t id, void *user_data);
 
 extern TwoWire Wire1;
+
+//WiFi WiFi();
 
 #include <Ticker.h>
 #include <HTTPClient.h>
@@ -88,14 +95,16 @@ extern TwoWire Wire1;
 
 // For wx stations using the MPL3115A2 barometric pressure sensor 
 #ifdef USE_MPL3115A2
-  #include <Adafruit_MPL3115A2.h>
+  #include "RP2040_MPL3115a2_hw.h"
   #ifndef USE_BAROMETRIC_PRESSURE_SENSOR
     #define USE_BAROMETRIC_PRESSURE_SENSOR true
   #endif
   #ifndef _INFCE_SEND_BAROMETRIC_PRESSURE
     #define _INFCE_SEND_BAROMETRIC_PRESSURE true
   #endif
-  Adafruit_MPL3115A2  mpl3115a2;
+  RP2040_MPL3115a2_hw  mpl3115a2(i2c1);
+
+  const uint8_t INT1_PIN = _u(16);
 #endif
 #ifdef USE_BMP280
   #include <Adafruit_BMP280.h>
@@ -123,8 +132,9 @@ static void ReadPressureSensor();
 #endif
 
 #ifdef USE_SHT31
-  #include <Adafruit_SHT31.h>
-  Adafruit_SHT31 sht31 = Adafruit_SHT31(&Wire1);
+  #include "RP2040_SHT31.h"
+  
+  RP2040_SHT31_hw sht31 = RP2040_SHT31_hw(i2c1);
   bool enableHeater = false;
   uint8_t loopCnt = 0;
   #ifndef _USE_TH_SENSOR
@@ -154,7 +164,8 @@ static void readTempHumiditySensor();
 #endif
 
 #include <NTPClient.h>
-
+#include <WiFiClient.h>
+#include <WiFiServer.h>
 #include <ESP8266WebServer.h>
 #include <HTTPServer.h>
 #include <HTTP_Method.h>
@@ -164,7 +175,7 @@ static void readTempHumiditySensor();
 #include <WebServerTemplate.h>
 #include <Dns.h>
 #include <DNSServer.h>
-#include <WiFi.h>
+//#include <WiFi.h>
 #include <ESP8266mDNS.h>
 #include <dummy_rp2040.h>
 
@@ -225,7 +236,8 @@ char dev_password[PASSWORD_LENGTH] = "password";
 // DNS server
 const byte DNS_PORT = 53;
 DNSServer dnsServer;
-WebServer server;
+//WebServer server;
+ESP8266WebServer server(80);
 
 // authentication 
 const char* www_username = "admin";
@@ -237,7 +249,7 @@ String authFailResponse = "Authentication Failed";
 
 u_int pgmState = pgmStateSetup;
 
-boolean connect;
+boolean ShouldConnectWifi;
 
 /** Last time I tried to connect to WLAN */
 unsigned long lastConnectTry = 0;
@@ -295,15 +307,16 @@ NTPClient timeClient(wifiUdp);
 #endif
 
 void setup() {
-  WiFiMode_t mode;  
+//  WiFiMode_t mode;  
   Serial.begin(115200);
+
   // 
   //while(!Serial);
   if(watchdog_caused_reboot()){
     Serial.println("Watchdog caused reboot!!!!");
   }else if(watchdog_enable_caused_reboot()){
     Serial.println("Watchdog Enable caused reboot!!!!");
-  }-
+  }
   // Initialize NVRAM
   Serial.println("Initialize NVRAM");
   if(fram.begin(0x50)){
@@ -361,31 +374,47 @@ void setup() {
     rtc_init();
 
   // initialize watchdog timer
+    spi_init(spi1, 500 * 1000);
+    gpio_set_function(10, GPIO_FUNC_SPI);
+    gpio_set_function(11, GPIO_FUNC_SPI);
+    gpio_set_function(12, GPIO_FUNC_SPI);
+    gpio_set_function(13, GPIO_FUNC_SPI);
   
-  connect = strlen(ssid)>0;  // Request WLAN connect if there is a SSID
+    // Chip select is active-low, so we'll initialise it to a driven-high state
+    gpio_init(13);
+    gpio_set_dir(13, GPIO_OUT);
+    gpio_put(13, 1);
+
+
+  // void WiFiClass::setPins(int8_t cs, int8_t irq, int8_t rst, int8_t en)
+ // WiFi.setPins(13,14,15,16);
+  gpio_set_irq_enabled(14,GPIO_IRQ_LEVEL_LOW, true);
+  ShouldConnectWifi = strlen(ssid)>0;  // Request WLAN connect if there is a SSID
   ConnectionAttempts = 0;
 
   // Start NTP 
   timeClient.begin();
 
-  if(connect){
+  if(ShouldConnectWifi){
     Serial.println(ssid);
   }
 
   // we don't have a wifi SSID yet. Open captive portal to obtain credentials. 
-  if(!connect){
+  if(!ShouldConnectWifi){
     Serial.println("No SSID found. Starting AP");
 
-    WiFi.mode(WIFI_AP_STA);
+   // WiFi.mode(WIFI_AP_STA);
     // setup AP for captive portal configuration
-    WiFi.softAPConfig(apIP, apIP, netMsk);
+
+    //WiFi.softAPConfig(apIP, apIP, netMsk);
     softAP_password = dev_password;
 
-    WiFi.softAP(softAP_ssid, softAP_password);
+    //WiFi.softAP(softAP_ssid, softAP_password);
 
     delay(500);  // Without delay I've seen the IP address blank
     Serial.print("AP IP address: ");
-    Serial.println(WiFi.softAPIP());}
+    //Serial.println(WiFi.softAPIP());
+    }
 
 /* Setup the DNS server redirecting all the domains to the apIP */
   dnsServer.setErrorReplyCode(DNSReplyCode::NoError);
@@ -412,13 +441,15 @@ void setup() {
   Serial.println("HTTP server started");
 
   // if ready to connect to wifi, try connecting
-  if(connect){
+  if(ShouldConnectWifi){
     connectWifi();
     pgmState = pgmStateWaitForConnect;
   }
   else{ // if we don't have wifi credentials, wait for credentials
     pgmState = waitForCredentials;
   }
+
+  /*
   mode = WiFi.getMode();
   if(mode==WIFI_AP_STA){
     Serial.print("Mode: ");Serial.println(mode);
@@ -435,13 +466,14 @@ void setup() {
   else{
     Serial.print("Mode: ");Serial.println(mode);
   }
+*/
 
   add_alarm_in_ms(5000, WundergroundInterfaceCallback, NULL, true);
   //add_repeating_timer_ms(5000, WundergroundInterfaceCallback, NULL, &WU_Update_timer);
   //watchdog_start_tick(1);
   // clk_ref is set to 32khz
   // watchdog ticks will not be microseconds. 
-  watchdog_enable(15000,1);
+  watchdog_enable(100000,1);
 
 }
 
@@ -499,7 +531,7 @@ void loop() {
       }
       else{
     // user will put credentials on captive portal. ssid should not exist until user enters the ssid 
-    if(connect = strlen(ssid) > 0){
+    if(ShouldConnectWifi = strlen(ssid) > 0){
       Serial.print("ssid:");
       Serial.println(ssid);
       pgmState = pgmStateWifiConnect;
@@ -511,7 +543,7 @@ void loop() {
   {
     if(!DoNotReconnectWifi){
       if(WiFi.status()==WL_CONNECTED&(ssid!=WiFi.SSID())&(strlen(ssid)>0)) { // SSID changed. Connect to a different SSID. 
-        WiFi.disconnect(false);
+        WiFi.disconnect();
         connectWifi();
         pgmState = pgmStateWaitForConnect;
         break;
@@ -527,7 +559,7 @@ void loop() {
           }
           else{
                 memset(ssid,0,sizeof(ssid));
-                WiFi.mode(WIFI_AP_STA);
+                //WiFi.mode(WIFI_AP_STA);
                 // setup AP for captive portal configuration
                 WiFi.softAPConfig(apIP, apIP, netMsk);
 
@@ -555,7 +587,7 @@ void loop() {
             }
       else // Wait for SSID credentials. 
       {
-        connect = false;
+        ShouldConnectWifi = false;
        // WiFi.reconnect();
 //        connectWifi();
         pgmState = waitForCredentials;
@@ -701,19 +733,29 @@ void setup1(){
   Wire1.setSDA(2);
   Wire1.setSCL(3);
 
+
+
 #ifdef USE_SHT31
-  if (sht31.begin()) {   // Initialize the SHT31 T/H Sensor
+  if (sht31.begin(SHT31_DEFAULT_ADDR)) {   // Initialize the SHT31 T/H Sensor
       //hardware_alarm_set_callback(1,readTempHumiditySensor);
   }
   else{
       Serial.println("Couldn't find SHT31");
     while (1) delay(1);
   }
+  sht31.clearStatus();
+  sht31.PeriodicMode(_1mps_high_Res);
+
 #endif
 
 #ifdef USE_MPL3115A2 // Initialize the USE_MPL3115A2 Pressure sensor
-    if (mpl3115a2.begin(&Wire1)) {
+    if (mpl3115a2.begin(MPL3115A2_ADDRESS)) {
         //add_alarm_in_ms(1000, ReadPressureSensor, NULL, false);
+        gpio_init(INT1_PIN);
+        gpio_pull_up(INT1_PIN);
+        mpl3115a2.setMode(MPL3115A2_BAROMETER);
+        gpio_set_irq_enabled_with_callback(INT1_PIN, GPIO_IRQ_LEVEL_LOW, true, &gpio_callback);
+
     }
     else{
       Serial.println("Could not find sensor. Check wiring.");
@@ -774,9 +816,13 @@ void ShouldUpdateWundergroundInterfaceTicker(){
 
 static int64_t readSensors(alarm_id_t id, void *user_data){
 //  (void)param;
-  readTempHumiditySensor();
-  ReadPressureSensor();
-  add_alarm_in_ms(1000, readSensors, NULL, true);
+  #ifdef _USE_TH_SENSOR
+    readTempHumiditySensor();
+  #endif
+  #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
+  // ReadPressureSensor();
+  #endif
+  add_alarm_in_ms(2000, readSensors, NULL, true);
   return 0;
 }
 
@@ -787,4 +833,25 @@ int64_t WundergroundInterfaceCallback(alarm_id_t id, void *user_data){
   return 0;
 }
 
+void gpio_callback(uint gpio, uint32_t events) {
+    // if we had enabled more than 2 interrupts on same pin, then we should read
+    // INT_SOURCE reg to find out which interrupt triggered
 
+    // we can filter by which GPIO was triggered
+    if (gpio == INT1_PIN) {
+        // FIFO overflow interrupt
+        // watermark bits set to 0 in F_SETUP reg, so only possible event is an overflow
+        // otherwise, we would read F_STATUS to confirm it was an overflow
+        //printf("FIFO overflow!\n");
+        // drain the fifo
+        //MP3115a2.mpl3115a2_read_fifo(MP3115a2.fifo_data);
+        // read status register to clear interrupt bit
+        //MP3115a2.mpl3115a2_read_reg(MPL3115A2_F_STATUS);
+        if(mpl3115a2.conversionComplete()){
+            mpl3115a2.data.pressure = mpl3115a2.getLastConversionResults(MPL3115A2_PRESSURE)*0.02953+PressureOffset;
+            // printf("pressure: %f\n",MP3115a2.data.pressure);
+            mpl3115a2.has_new_data = true;
+        }
+
+    }
+}

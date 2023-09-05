@@ -129,7 +129,7 @@ void handleWifiSave() {
       server.send(302, "text/plain", "");  // Empty content inhibits Content-length header so we have to close the socket ourselves.
       server.client().stop();              // Stop is needed because we sent no content length
       saveCredentials();
-      connect = strlen(ssid) > 0;  // Request WLAN connect with new credentials if there is a SSID
+      ShouldConnectWifi = strlen(ssid) > 0;  // Request WLAN connect with new credentials if there is a SSID
     }
 }
 
@@ -432,10 +432,12 @@ void SaveSensors(){
     }else {
 //      memset(ssid,0,sizeof(ssid));
 //      memset(password,0,sizeof(password));
+      #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
       Serial.print("Save Pressure Offset: ");
       externalPressureOffset = server.arg("b").toFloat();
       QueueBarometerForInterfaces = server.arg("i").equals("on");
       Serial.println();
+      #endif
       server.sendHeader("Location", "sensors", true);
       server.sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
       server.sendHeader("Pragma", "no-cache");

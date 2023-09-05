@@ -11,15 +11,14 @@ static void readTempHumiditySensor(){
  // (void) param;
 
 #ifdef USE_SHT31
-  float t = sht31.readTemperature();
-  float h = sht31.readHumidity();
-
+float t, h;
+  if(sht31.FetchData(&t, &h)){
   if (! isnan(t)) {  // check if 'is not a number'
 //    Serial.print("Temp *C = "); Serial.print(t); Serial.print("\t\t");
     temperature = t;
     tempc = temperature;
     tempf = (temperature * 1.8) + 32;
-  } else { 
+  } else {
     Serial.println("Failed to read temperature");
   }
   
@@ -29,34 +28,13 @@ static void readTempHumiditySensor(){
   } else { 
     Serial.println("Failed to read humidity");
   }
-
-//  pressure = mpl3115a2.getPressure()*0.02953+PressureOffset;
-
-//  delay(1000);
-
-  // Toggle heater enabled state every 30 seconds
-  // An ~3.0 degC temperature increase can be noted when heater is enabled
-  if (loopCnt >= 30) {
-    enableHeater = !enableHeater;
-    sht31.heater(enableHeater);
-    Serial.print("Heater Enabled State: ");
-    if (sht31.isHeaterEnabled())
-      Serial.println("ENABLED");
-    else
-      Serial.println("DISABLED");
-
-    loopCnt = 0;
-  }
-  loopCnt++;
+}
 #endif
-
- // return 0;
-
 }
 
 #endif
 
-#ifdef USE_BAROMETRIC_PRESSURE_SENSOR
+#ifdef USE_BAROMETRIC_PRESSURE_SENSOR 
 
 static void ReadPressureSensor(){
  // (void)param;

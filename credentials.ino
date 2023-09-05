@@ -129,6 +129,8 @@ void saveSensorsToDisk(){
   char ok[2 + 1];
   uint8_t buffer1[512];
   uint8_t enable = 0;
+
+  #ifdef USE_BAROMETRIC_PRESSURE_SENSOR
   PressureOffset = externalPressureOffset;
   PressureConversion.pressureF = externalPressureOffset;
 
@@ -176,7 +178,7 @@ void saveSensorsToDisk(){
       fram.write(mem_BAR_ENABLE,0);
     #endif
     }
-
+#endif
 
 
 }
@@ -187,6 +189,7 @@ void LoadSensorsFromDisk(){
   uint32_t address;
   uint8_t buffer1[256];
 
+#ifdef USE_BAROMETRIC_PRESSURE_SENSOR
   for(address = 0; address <sizeof(PressureConversion);address++){
     #ifdef USE_SPI_FRAM
        PressureConversion.bytes[address] = fram.read8(mem_PRESSURE_OFFSET+address);
@@ -223,7 +226,8 @@ void LoadSensorsFromDisk(){
     Serial.println("Disabled Queue Barometers for Interfaces");
     QueueBarometerForInterfaces = false;
   }
-
+#endif
+  // Load Thermometer information 
   #ifdef USE_SPI_FRAM
     enable = fram.read8(mem_INFCE_THERMOMETER_ENABLE);
   #endif
@@ -356,7 +360,7 @@ void saveHumidityToDisk(){
   uint8_t enable = 0;
 
 
-    if(QueueHumidityForInterfaces == true){
+  if(QueueHumidityForInterfaces == true){
     #ifdef USE_SPI_FRAM
       fram.writeEnable(true);
       fram.write8(mem_INFCE_HUMIDITY_ENABLE,(uint8_t)255);
@@ -368,7 +372,7 @@ void saveHumidityToDisk(){
     #ifdef USE_I2C_EEPROM
       fram.write(mem_INFCE_HUMIDITY_ENABLE,(uint8_t)255);
     #endif
-    }
+  }
     //if(!fram.write8(mem_WUNDERGROUND_ENABLE,255)) {Serial.println("Could not write wunderground enable flag to fram ");}}
   else {
     #ifdef USE_SPI_FRAM
