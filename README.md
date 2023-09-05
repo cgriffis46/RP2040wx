@@ -1,4 +1,5 @@
-![rp2040wx_fritz_bb](https://github.com/cgriffis46/RP2040wx/assets/78368880/f782d777-d45e-46a9-9e4c-c5149565e536)
+![rp2040wx_fritz_bb](https://github.com/cgriffis46/RP2040wx/assets/78368880/1227731c-7aae-4dd2-987b-e9549817c03d)
+
 
 
 # RP2040wx
