@@ -1,6 +1,3 @@
-//#include <WiFi101.h>
-//#include <WiFiNINA.h>
-
 /*
   Written by : Cory S Griffis
   (C) 8/10/2010
@@ -8,7 +5,7 @@
   No warranty provided. 
 */
 
-#define wx_version String("00.00.20");
+#define wx_version String("00.01.00");
 
 #define USE_RP2040_PICO
 
@@ -403,17 +400,17 @@ void setup() {
   if(!ShouldConnectWifi){
     Serial.println("No SSID found. Starting AP");
 
-   // WiFi.mode(WIFI_AP_STA);
+    WiFi.mode(WIFI_AP);
     // setup AP for captive portal configuration
 
-    //WiFi.softAPConfig(apIP, apIP, netMsk);
+    WiFi.softAPConfig(apIP, apIP, netMsk);
     softAP_password = dev_password;
 
-    //WiFi.softAP(softAP_ssid, softAP_password);
+    WiFi.softAP(softAP_ssid, softAP_password);
 
     delay(500);  // Without delay I've seen the IP address blank
     Serial.print("AP IP address: ");
-    //Serial.println(WiFi.softAPIP());
+    Serial.println(WiFi.softAPIP());
     }
 
 /* Setup the DNS server redirecting all the domains to the apIP */
